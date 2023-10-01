@@ -1,0 +1,43 @@
+{
+  "extends": ["airbnb-base", "airbnb-typescript/base", "prettier"],
+  "parserOptions": {
+    "project": "tsconfig.json"
+  },
+  "rules": {
+    "@typescript-eslint/no-redeclare": "off",
+    "import/prefer-default-export": "off",
+    "import/extensions": "off",
+    "class-methods-use-this": "off",
+    "prefer-destructuring": [
+      "error",
+      {
+        "array": false,
+        "object": true
+      },
+      {
+        "enforceForRenamedProperties": false
+      }
+    ],
+    "arrow-body-style": ["error", "as-needed"],
+    "no-console": ["error", { "allow": ["warn", "error", "info"] }],
+    "no-plusplus": "off",
+    "no-continue": "off",
+    "no-param-reassign": "off",
+    "no-restricted-exports": "off",
+    "no-restricted-syntax": "off"
+  },
+  "overrides": [
+    {
+      "files": ["**/*.spec.ts"],
+      "rules": {
+        "import/no-import-module-exports": "off"
+      }
+    },
+    {
+      "files": ["src/utils/**/*.ts"],
+      "rules": {
+        "max-classes-per-file": "off"
+      }
+    }
+  ]
+}
