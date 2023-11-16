@@ -1,8 +1,8 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { hash, excludeColumns, getPaginationOptions } from 'src/utils';
+import { hash, excludeColumns, getPaginationOptions, formatPaginatedResponse, getSortOptions } from 'src/utils';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../common/prisma';
-import { CreateUserDto } from './dtos';
+import { PrismaService } from '../../common';
+import { CreateUserDto, DeactivateUserDto } from './dtos';
 import { GetAllUsersQuery, IsUserTakenQuery } from './queries';
 import {
   CreateUserResponse,
@@ -15,6 +15,17 @@ import {
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
+
+  async activate(id: number) {
+    await this.getByPk(id);
+
+    await this.prismaService.client().user.update({
+      where: { id },
+      data: {
+        isActive: true,
+      },
+    });
+  }
 
   async create(data: CreateUserDto): Promise<CreateUserResponse> {
     const { isTaken } = await this.isTaken({
@@ -37,6 +48,18 @@ export class UserService {
     });
 
     return user;
+  }
+
+  async deactivate(id: number, data: DeactivateUserDto) {
+    await this.getByPk(id);
+
+    await this.prismaService.client().user.update({
+      where: { id },
+      data: {
+        isActive: false,
+        deactivationReason: data.deactivationReason,
+      },
+    });
   }
 
   async delete(id: number): Promise<DeleteUserResponse> {
@@ -69,14 +92,13 @@ export class UserService {
       this.prismaService.client().user.findMany({
         where,
         ...getPaginationOptions({ page, limit }),
-        orderBy: { [sort]: order },
+        ...getSortOptions({ sort, order }),
         select: excludeColumns('User', ['password']),
       }),
       this.prismaService.client().user.count({ where }),
     ]);
 
-    // TODO: utility to form paginated response
-    return { items: users, meta: { total } };
+    return formatPaginatedResponse({ items: users, total });
   }
 
   async getByEmail(email: string) {
@@ -99,7 +121,7 @@ export class UserService {
   }
 
   async isTaken(query: IsUserTakenQuery): Promise<IsUserTakenResponse> {
-    const [emailUser, phoneUser] = await Promise.all([
+    const [userEmail, userPhone] = await Promise.all([
       this.prismaService.client().user.findFirst({
         where: { email: query.email },
       }),
@@ -109,9 +131,9 @@ export class UserService {
     ]);
 
     return {
-      isTaken: !!(emailUser || phoneUser),
-      email: !!emailUser,
-      phone: !!phoneUser,
+      isTaken: !!(userEmail || userPhone),
+      email: !!userEmail,
+      phone: !!userPhone,
     };
   }
 }

@@ -2,7 +2,16 @@
 CREATE TYPE "Role" AS ENUM ('volunteer', 'admin', 'superAdmin');
 
 -- CreateEnum
-CREATE TYPE "Gender" AS ENUM ('male', 'female');
+CREATE TYPE "Gender" AS ENUM ('male', 'female', 'universal');
+
+-- CreateEnum
+CREATE TYPE "NeedStatus" AS ENUM ('moderate', 'very');
+
+-- CreateEnum
+CREATE TYPE "GiftType" AS ENUM ('hygieneProduct', 'stationery', 'toy', 'clothes', 'other');
+
+-- CreateEnum
+CREATE TYPE "GiftSubtype" AS ENUM ('notebook', 'colored', 'book', 'art', 'album');
 
 -- CreateTable
 CREATE TABLE "User" (
@@ -13,6 +22,8 @@ CREATE TABLE "User" (
     "email" VARCHAR(100) NOT NULL,
     "password" VARCHAR(255) NOT NULL,
     "role" "Role" NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "deactivationReason" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -48,10 +59,13 @@ CREATE TABLE "Child" (
     "id" SERIAL NOT NULL,
     "firstName" VARCHAR(20) NOT NULL,
     "lastName" VARCHAR(20) NOT NULL,
-    "birthDate" DATE NOT NULL,
+    "birthYear" INTEGER NOT NULL,
     "gender" "Gender" NOT NULL,
-    "isActive" BOOLEAN NOT NULL,
-    "deactivationReason" TEXT NOT NULL,
+    "phone" TEXT NOT NULL,
+    "notes" TEXT,
+    "needStatus" "NeedStatus" NOT NULL,
+    "isActive" BOOLEAN NOT NULL DEFAULT true,
+    "deactivationReason" TEXT,
     "addressId" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
@@ -63,9 +77,14 @@ CREATE TABLE "Child" (
 CREATE TABLE "Gift" (
     "id" SERIAL NOT NULL,
     "name" VARCHAR(50) NOT NULL,
-    "description" TEXT NOT NULL,
-    "forAge" INTEGER NOT NULL,
-    "count" INTEGER NOT NULL,
+    "type" "GiftType" NOT NULL,
+    "subtype" "GiftSubtype" NOT NULL,
+    "forGender" "Gender" NOT NULL,
+    "description" TEXT,
+    "minAge" INTEGER NOT NULL,
+    "maxAge" INTEGER NOT NULL,
+    "requiredQuantity" INTEGER,
+    "currentQuantity" INTEGER NOT NULL,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
@@ -118,6 +137,9 @@ CREATE UNIQUE INDEX "User_phone_key" ON "User"("phone");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Gift_name_key" ON "Gift"("name");
 
 -- CreateIndex
 CREATE UNIQUE INDEX "Volunteer_userId_key" ON "Volunteer"("userId");

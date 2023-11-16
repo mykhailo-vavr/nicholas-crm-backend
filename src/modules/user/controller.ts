@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -7,7 +7,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { UserService } from './service';
-import { CreateUserDto } from './dtos';
+import { CreateUserDto, DeactivateUserDto } from './dtos';
 import { GetAllUsersQuery, IsUserTakenQuery } from './queries';
 import {
   CreateUserResponse,
@@ -18,16 +18,30 @@ import {
 } from './responses';
 
 @ApiBearerAuth()
-@ApiTags('Users')
+@ApiTags('User')
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @ApiUnauthorizedResponse()
+  @ApiNotFoundResponse()
+  @Patch(':id/activate')
+  async activate(@Param('id') id: number) {
+    return this.userService.activate(id);
+  }
 
   @ApiUnauthorizedResponse()
   @ApiConflictResponse()
   @Post()
   async create(@Body() dto: CreateUserDto): Promise<CreateUserResponse> {
     return this.userService.create(dto);
+  }
+
+  @ApiUnauthorizedResponse()
+  @ApiNotFoundResponse()
+  @Patch(':id/deactivate')
+  async deactivate(@Param('id') id: number, @Body() dto: DeactivateUserDto) {
+    return this.userService.deactivate(id, dto);
   }
 
   @ApiUnauthorizedResponse()
