@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { Role, User } from '@prisma/client';
 
-export class UserBaseResponse {
+export class UserBaseResponse implements Omit<User, 'password'> {
   id: number;
 
   firstName: string;
@@ -14,6 +14,10 @@ export class UserBaseResponse {
 
   @ApiProperty({ enum: Role, enumName: 'RolesEnum' })
   role: Role;
+
+  isActive: boolean;
+
+  deactivationReason: string | null;
 
   createdAt: Date;
 

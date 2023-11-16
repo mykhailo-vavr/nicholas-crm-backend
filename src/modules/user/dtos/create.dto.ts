@@ -1,21 +1,15 @@
 import { Prisma, Role } from 'src/types';
-import {
-  IsEmail,
-  IsEnum,
-  IsNotEmpty,
-  IsPhoneNumber,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto implements Prisma.UserCreateInput {
   @IsNotEmpty()
   @IsString()
-  lastName: string;
+  firstName: string;
 
   @IsNotEmpty()
   @IsString()
-  firstName: string;
+  lastName: string;
 
   @IsPhoneNumber('UA')
   phone: string;

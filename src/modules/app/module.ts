@@ -11,12 +11,14 @@ import { UserModule } from '../user';
 import { AddressModule } from '../address';
 import { ChildModule } from '../child';
 import { VolunteerModule } from '../volunteer';
+import { GiftModule } from '../gift';
 
 @Module({
   imports: [
     AddressModule,
     AuthModule,
     ChildModule,
+    GiftModule,
     UserModule,
     VolunteerModule,
     ConfigModule.forRoot({

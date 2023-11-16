@@ -1,9 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
-import {
-  DatabaseNamespaceKeysEnum,
-  databaseNamespace,
-} from 'src/database/namespace';
+import { DatabaseNamespaceKeysEnum, databaseNamespace } from 'src/database/namespace';
 
 // TODO: service for namespaces
 // TODO: Refactor this service
@@ -35,4 +32,13 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
     return client;
   }
+
+  // async findManyAndCount(modelName: Uncapitalize<PrismaModel>) {
+  //   const [items, total] = await this.$transaction([
+  //     this.client()[modelName].findMany(),
+  //     this.client()[modelName].count(),
+  //   ]);
+
+  //   return [items, total];
+  // }
 }
