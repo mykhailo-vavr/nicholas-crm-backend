@@ -44,10 +44,10 @@ CREATE TABLE "ActivityLog" (
 -- CreateTable
 CREATE TABLE "Address" (
     "id" SERIAL NOT NULL,
-    "city" VARCHAR(20) NOT NULL,
+    "city" VARCHAR(30) NOT NULL,
     "street" VARCHAR(50) NOT NULL,
-    "streetNumber" INTEGER NOT NULL,
-    "flatNumber" INTEGER NOT NULL,
+    "streetNumber" VARCHAR(10),
+    "flatNumber" INTEGER,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 

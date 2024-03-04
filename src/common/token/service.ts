@@ -14,7 +14,7 @@ export class TokenService {
       access: (payload: Record<string, any>) =>
         this.jwtService.signAsync(payload, {
           secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-          expiresIn: '1h',
+          expiresIn: '1w',
         }),
     };
   }

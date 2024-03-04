@@ -6,6 +6,8 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { Public, User } from 'src/decorators';
+import { UserTokenData } from 'src/types';
 import { UserService } from './service';
 import { CreateUserDto, DeactivateUserDto } from './dtos';
 import { GetAllUsersQuery, IsUserTakenQuery } from './queries';
@@ -30,6 +32,8 @@ export class UserController {
     return this.userService.activate(id);
   }
 
+  // TODO: remove @Public()
+  @Public()
   @ApiUnauthorizedResponse()
   @ApiConflictResponse()
   @Post()
@@ -58,9 +62,10 @@ export class UserController {
   }
 
   @ApiUnauthorizedResponse()
-  @Get('is-taken')
-  async isTaken(@Query() query: IsUserTakenQuery): Promise<IsUserTakenResponse> {
-    return this.userService.isTaken(query);
+  @ApiNotFoundResponse()
+  @Get('me')
+  async getMe(@User() user: UserTokenData) {
+    return this.userService.getByPk(user.id);
   }
 
   @ApiUnauthorizedResponse()
@@ -68,5 +73,11 @@ export class UserController {
   @Get(':id')
   async getByPk(@Param('id') id: number): Promise<GetUserByPkResponse> {
     return this.userService.getByPk(id);
+  }
+
+  @ApiUnauthorizedResponse()
+  @Get('is-taken')
+  async isTaken(@Query() query: IsUserTakenQuery): Promise<IsUserTakenResponse> {
+    return this.userService.isTaken(query);
   }
 }
