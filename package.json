@@ -7,8 +7,9 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "rimraf ./dist && nest build",
-    "start:dev": "nest start --watch",
+    "start:dev": "npm run prisma:migrate && nest start --watch",
     "start:prod": "npm run build && node dist/main",
+    "compose": "docker compose -f docker-compose.dev.yml up",
     "prisma:migration": "prisma migrate dev --name",
     "prisma:migrate": "prisma migrate deploy",
     "prisma:generate": "prisma generate",

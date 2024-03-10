@@ -8,4 +8,4 @@
 3. Run migrations for db
    `npm run prisma:migrate`
 4. Run project
-   `npm run start:dev`
+   `npm run compose`

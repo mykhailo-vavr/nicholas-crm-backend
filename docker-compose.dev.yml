@@ -1,0 +1,43 @@
+version: '3.8'
+services:
+  nicholas-crm-nestjs:
+    container_name: nicholas-crm-nestjs
+    image: nicholas-crm-nestjs
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    ports:
+      - 8080:8080
+    env_file:
+      - .env
+    volumes:
+      - ./src:/opt/app/src
+      - ./.env:/opt/app/.env
+      - ./package.json:/opt/app/package.json
+      - ./package-lock.json:/opt/app/package-lock.json
+    depends_on:
+      - nicholas-crm-postgres
+
+  nicholas-crm-postgres:
+    container_name: nicholas-crm-postgres
+    image: postgres:13
+    ports:
+      - 5432:5432
+    env_file:
+      - .env
+    # Add mapping from POSTGRES_* to DATABASE_*
+    volumes:
+      - ./data:/var/lib/postgresql/data
+
+  nicholas-crm-pgadmin:
+    container_name: nicholas-crm-pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    ports:
+      - '5050:80'
+    # Move this to .env
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
+      - PGADMIN_DEFAULT_PASSWORD=pgadmin4
+    depends_on:
+      - nicholas-crm-postgres
