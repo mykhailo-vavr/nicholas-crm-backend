@@ -30,9 +30,7 @@ export class EnvironmentVariables {
   NODE_ENV: EnvironmentsEnum;
 }
 
-export const validateEnvironmentVariables = (
-  config: Record<string, unknown>,
-) => {
+export const validateEnvironmentVariables = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });

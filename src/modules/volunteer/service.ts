@@ -14,22 +14,20 @@ export class VolunteerService {
   async create(data: CreateVolunteerDto) {
     const { user, ...volunteerData } = data;
 
-    const createdVolunteer = await this.prismaService.createTransaction(
-      async () => {
-        const { id } = await this.userService.create({
-          ...user,
-          role: Role.volunteer,
-        });
+    const createdVolunteer = await this.prismaService.createTransaction(async () => {
+      const { id } = await this.userService.create({
+        ...user,
+        role: Role.volunteer,
+      });
 
-        const volunteer = await this.prismaService.client().volunteer.create({
-          data: {
-            ...volunteerData,
-            user: { connect: { id } },
-          },
-        });
-        return volunteer;
-      },
-    );
+      const volunteer = await this.prismaService.client().volunteer.create({
+        data: {
+          ...volunteerData,
+          user: { connect: { id } },
+        },
+      });
+      return volunteer;
+    });
 
     return createdVolunteer;
   }

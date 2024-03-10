@@ -1,10 +1,6 @@
 import { Controller, Get, Param, Delete, Post, Body } from '@nestjs/common';
 import { Public } from 'src/decorators';
-import {
-  ApiConflictResponse,
-  ApiCreatedResponse,
-  ApiTags,
-} from '@nestjs/swagger';
+import { ApiConflictResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { VolunteerService } from './service';
 import { CreateVolunteerDto } from './dto';
 
