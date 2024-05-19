@@ -3,9 +3,9 @@ FROM node:18
 WORKDIR /opt
 COPY package*.json .
 COPY src/database ./src/database/
-RUN npm install
+RUN npm i
 
 WORKDIR /opt/app
 COPY . .
 
-CMD [ "npm", "run", "start:dev" ]
+CMD [ "npm","run", "start:dev" ]

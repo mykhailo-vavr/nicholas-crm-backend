@@ -19,7 +19,9 @@ export class AuthService {
       throw new NotFoundException('Email or password are incorrect');
     }
 
-    const validPassword = await validateHash(data.password, user.password);
+    const { password, ...userData } = user;
+
+    const validPassword = await validateHash(data.password, password);
 
     if (!validPassword) {
       throw new NotFoundException('Email or password are incorrect');
@@ -30,6 +32,6 @@ export class AuthService {
       role: user.role,
     });
 
-    return { id: user.id, role: user.role, accessToken };
+    return { ...userData, role: user.role, accessToken };
   }
 }

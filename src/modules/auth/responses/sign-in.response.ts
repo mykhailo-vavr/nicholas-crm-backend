@@ -1,11 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Role } from '@prisma/client';
+import { UserBaseResponse } from 'src/modules/user/responses';
 
-export class SignInResponse {
-  id: number;
-
-  @ApiProperty({ enum: Role, enumName: 'RolesEnum' })
-  role: Role;
-
+export class SignInResponse extends UserBaseResponse {
   accessToken: string;
 }

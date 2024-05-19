@@ -13,8 +13,8 @@ services:
     volumes:
       - ./src:/opt/app/src
       - ./.env:/opt/app/.env
-      - ./package.json:/opt/app/package.json
-      - ./package-lock.json:/opt/app/package-lock.json
+      - ./package.json:/opt/package.json
+      - ./package-lock.json:/opt/package-lock.json
     depends_on:
       - nicholas-crm-postgres
 
