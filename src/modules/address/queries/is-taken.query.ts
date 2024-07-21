@@ -12,10 +12,10 @@ export class IsAddressTakenQuery {
   @IsOptional()
   @MinLength(1)
   @MaxLength(10)
-  streetNumber?: string;
+  streetNumber?: string | null;
 
   @IsOptional()
   @IsInt()
   @IsPositive()
-  flatNumber?: number;
+  flatNumber?: number | null;
 }

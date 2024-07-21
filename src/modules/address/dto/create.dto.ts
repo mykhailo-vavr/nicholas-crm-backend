@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsPositive, MaxLength, MinLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsNumber, IsOptional, IsPositive, MaxLength, MinLength } from 'class-validator';
 
 export class CreateAddressDto {
   @IsNotEmpty()
@@ -18,4 +18,14 @@ export class CreateAddressDto {
   @IsInt()
   @IsPositive()
   flatNumber?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  latitude?: number;
+
+  @IsOptional()
+  @IsNumber()
+  @IsPositive()
+  longitude?: number;
 }

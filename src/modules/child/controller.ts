@@ -1,9 +1,11 @@
 import { Controller, Get, Post, Body, Param, Delete, Query, Patch } from '@nestjs/common';
 import { ApiBearerAuth, ApiNotFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { ChildService } from './service';
-import { CreateChildDto, DeactivateChildDto } from './dtos';
+import { CreateChildDto, DeactivateChildDto, IsChildTakenDto } from './dtos';
 import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
 import { GetAllChildrenQuery } from './queries';
+import { IsChildTakenResponse } from './responses/is-taken.response';
+import { CreateManyChildrenDto } from './dtos/create-many.dto';
 
 @ApiBearerAuth()
 @ApiTags('Child')
@@ -25,6 +27,12 @@ export class ChildController {
   }
 
   @ApiUnauthorizedResponse()
+  @Post('many')
+  async createMany(@Body() dto: CreateManyChildrenDto): Promise<void> {
+    return this.childService.createMany(dto);
+  }
+
+  @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @Patch(':id/deactivate')
   async deactivate(@Param('id') id: number, @Body() dto: DeactivateChildDto) {
@@ -42,6 +50,12 @@ export class ChildController {
   @Get()
   async getAll(@Query() query: GetAllChildrenQuery): Promise<GetAllChildrenResponse> {
     return this.childService.getAll(query);
+  }
+
+  @ApiUnauthorizedResponse()
+  @Post('is-taken')
+  async isTaken(@Body() dto: IsChildTakenDto): Promise<IsChildTakenResponse> {
+    return this.childService.isTaken(dto);
   }
 
   @ApiUnauthorizedResponse()

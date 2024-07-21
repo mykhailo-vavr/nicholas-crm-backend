@@ -7,5 +7,6 @@ import { AddressModule } from '../address';
   imports: [AddressModule],
   controllers: [ChildController],
   providers: [ChildService],
+  exports: [ChildService],
 })
 export class ChildModule {}

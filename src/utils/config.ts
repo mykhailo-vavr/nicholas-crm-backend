@@ -28,6 +28,15 @@ export class EnvironmentVariables {
 
   @IsEnum(EnvironmentsEnum)
   NODE_ENV: EnvironmentsEnum;
+
+  @IsString()
+  FUNCTIONS_API_URL: string;
+
+  @IsString()
+  FUNCTIONS_API_KEY: string;
+
+  @IsString()
+  GOOGLE_MAPS_API_KEY: string;
 }
 
 export const validateEnvironmentVariables = (config: Record<string, unknown>) => {

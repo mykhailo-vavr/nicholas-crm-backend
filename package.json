@@ -7,7 +7,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "build": "rimraf ./dist && nest build",
-    "start:dev": "npm run prisma:migrate && nest start --watch",
+    "start:dev": "npm run prisma:migrate && npm run prisma:generate && nest start --watch",
     "start:prod": "npm run build && node dist/main",
     "compose": "docker compose -f docker-compose.dev.yml up",
     "prisma:migration": "prisma migrate dev --name",
@@ -26,6 +26,8 @@
     "commitlint": "commitlint --edit"
   },
   "dependencies": {
+    "@googlemaps/google-maps-services-js": "^3.4.0",
+    "@nestjs/axios": "^3.0.2",
     "@nestjs/common": "^10.0.0",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.0.0",
@@ -34,6 +36,7 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/swagger": "^7.1.13",
     "@prisma/client": "^5.3.1",
+    "axios": "^1.7.2",
     "bcrypt": "^5.1.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",

@@ -78,6 +78,8 @@ model Address {
   street       String  @db.VarChar(50)
   streetNumber String? @db.VarChar(10)
   flatNumber   Int?
+  latitude     Float
+  longitude    Float
 
   children        Child[]
   routesAddresses RouteAdress[]
@@ -93,7 +95,7 @@ model Child {
   lastName           String     @db.VarChar(20)
   birthYear          Int
   gender             Gender
-  phone              String
+  phone              String?
   notes              String?
   needStatus         NeedStatus
   isActive           Boolean    @default(true)
@@ -124,9 +126,32 @@ model Gift {
 }
 
 model Route {
-  id              Int              @id @default(autoincrement())
-  routeAdresses   RouteAdress[]
-  routeVolunteers RouteVolunteer[]
+  id Int @id @default(autoincrement())
+
+  year   Int
+  number Int
+
+  routeAdresses RouteAdress[]
+  routeGroups   RouteGroup[]
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  RouteConfig   RouteConfig? @relation(fields: [year], references: [year])
+  routeConfigId Int?
+
+  @@unique([year, number])
+}
+
+model RouteConfig {
+  id Int @id @default(autoincrement())
+
+  year Int @unique
+
+  isEditable  Boolean
+  isCreated   Boolean
+  isCompleted Boolean
+
+  routes Route[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -145,30 +170,52 @@ model RouteAdress {
   @@id([routeId, addressId])
 }
 
-model RouteVolunteer {
-  routeId     Int
-  volunteerId Int
-
-  route     Route     @relation(fields: [routeId], references: [id])
-  volunteer Volunteer @relation(fields: [volunteerId], references: [id])
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@id([routeId, volunteerId])
-}
-
 model Volunteer {
   id Int @id @default(autoincrement())
 
   birthDate DateTime @db.Date
   hasCar    Boolean
 
-  userId Int  @unique
-  user   User @relation(fields: [userId], references: [id])
-
-  routeVolunteers RouteVolunteer[]
+  userId          Int              @unique
+  user            User             @relation(fields: [userId], references: [id])
+  volunteerGroups VolunteerGroup[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Group {
+  id Int @id @default(autoincrement())
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  volunteerGroups VolunteerGroup[]
+  routeGroups     RouteGroup[]
+}
+
+model VolunteerGroup {
+  volunteerId Int
+  groupId     Int
+
+  volunteer Volunteer @relation(fields: [volunteerId], references: [id])
+  group     Group     @relation(fields: [groupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([volunteerId, groupId])
+}
+
+model RouteGroup {
+  routeId Int
+  groupId Int
+
+  route Route @relation(fields: [routeId], references: [id])
+  group Group @relation(fields: [groupId], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@id([routeId, groupId])
 }

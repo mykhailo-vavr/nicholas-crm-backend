@@ -12,6 +12,7 @@ import { AddressModule } from '../address';
 import { ChildModule } from '../child';
 import { VolunteerModule } from '../volunteer';
 import { GiftModule } from '../gift';
+import { RouteModule } from '../route';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { GiftModule } from '../gift';
     AuthModule,
     ChildModule,
     GiftModule,
+    RouteModule,
     UserModule,
     VolunteerModule,
     ConfigModule.forRoot({

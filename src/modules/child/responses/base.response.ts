@@ -14,7 +14,7 @@ export class ChildBaseResponse implements Omit<Child, 'addressId'> {
   @ApiProperty({ enum: Gender, enumName: 'GenderEnum' })
   gender: Gender;
 
-  phone: string;
+  phone: string | null;
 
   notes: string | null;
 

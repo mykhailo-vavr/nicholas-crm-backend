@@ -2,10 +2,12 @@ import { Prisma } from '@prisma/client';
 import { formatPaginatedResponse, getPaginationOptions, getSortOptions } from 'src/utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common';
-import { CreateChildDto, DeactivateChildDto } from './dtos';
+import { CreateChildDto, DeactivateChildDto, IsChildTakenDto } from './dtos';
 import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
 import { GetAllChildrenQuery } from './queries';
 import { AddressService } from '../address';
+import { IsChildTakenResponse } from './responses/is-taken.response';
+import { CreateManyChildrenDto } from './dtos/create-many.dto';
 
 // TODO: create isTaken method (firstName, lastName, birthYear)
 
@@ -30,19 +32,52 @@ export class ChildService {
   async create(data: CreateChildDto): Promise<CreateChildResponse> {
     const { address, ...childData } = data;
 
-    const isAddressTaken = await this.addressService.isTaken(address);
+    const createdChild = await this.prismaService.createTransaction(async () => {
+      const { id } = await this.addressService.create(address);
 
-    const child = await this.prismaService.client().child.create({
-      data: {
-        ...childData,
-        address: isAddressTaken.id ? { connect: { id: isAddressTaken.id } } : { create: address },
-      },
-      include: {
-        address: true,
-      },
+      const child = await this.prismaService.client().child.create({
+        data: {
+          ...childData,
+          address: {
+            connect: {
+              id,
+            },
+          },
+        },
+        include: {
+          address: true,
+        },
+      });
+
+      return child;
     });
 
-    return child;
+    return createdChild;
+  }
+
+  async createMany(data: CreateManyChildrenDto): Promise<void> {
+    await this.prismaService.createTransaction(async () => {
+      await Promise.all(
+        data.items.map(async (item) => {
+          const { address, ...childData } = item;
+          const { id } = await this.addressService.create(address);
+
+          return this.prismaService.client().child.create({
+            data: {
+              ...childData,
+              address: {
+                connect: {
+                  id,
+                },
+              },
+            },
+            include: {
+              address: true,
+            },
+          });
+        }),
+      );
+    });
   }
 
   async deactivate(id: number, data: DeactivateChildDto) {
@@ -69,19 +104,21 @@ export class ChildService {
   async getAll(query: GetAllChildrenQuery): Promise<GetAllChildrenResponse> {
     const {
       search = '',
-      sort = Prisma.UserScalarFieldEnum.id,
+      sort = Prisma.ChildScalarFieldEnum.id,
       order = Prisma.SortOrder.asc,
       page = 0,
       limit = 20,
     } = query;
 
     const where: Prisma.ChildFindManyArgs['where'] = {
-      OR: [
-        { firstName: { contains: search, mode: 'insensitive' } },
-        { lastName: { contains: search, mode: 'insensitive' } },
-        { deactivationReason: { contains: search, mode: 'insensitive' } },
-        { phone: { contains: search, mode: 'insensitive' } },
-      ],
+      ...(search && {
+        OR: [
+          { firstName: { contains: search, mode: 'insensitive' } },
+          { lastName: { contains: search, mode: 'insensitive' } },
+          { deactivationReason: { contains: search, mode: 'insensitive' } },
+          { phone: { contains: search, mode: 'insensitive' } },
+        ],
+      }),
     };
 
     const [children, total] = await this.prismaService.$transaction([
@@ -108,5 +145,23 @@ export class ChildService {
     }
 
     return child;
+  }
+
+  async isTaken(query: IsChildTakenDto): Promise<IsChildTakenResponse> {
+    const child = await this.prismaService.client().child.findFirst({
+      where: {
+        lastName: query.lastName,
+        firstName: query.firstName,
+        birthYear: query.birthYear,
+      },
+      include: {
+        address: true,
+      },
+    });
+
+    return {
+      isTaken: !!child,
+      child: child || undefined,
+    };
   }
 }
