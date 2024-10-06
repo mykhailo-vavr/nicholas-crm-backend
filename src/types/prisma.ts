@@ -8,5 +8,3 @@ export type PrismaModelKeys<M extends PrismaModel> = Extract<
 >;
 
 export type PrismaModelExcludedKeys<M extends PrismaModel, K> = Exclude<PrismaModelKeys<M>, K>;
-
-export * from '@prisma/client';

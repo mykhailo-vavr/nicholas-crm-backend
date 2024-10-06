@@ -1,4 +1,5 @@
-import { Prisma, PrismaModel, PrismaModelExcludedKeys, PrismaModelKeys } from 'src/types';
+import { Prisma } from '@prisma/client';
+import { PrismaModel, PrismaModelExcludedKeys, PrismaModelKeys } from 'src/types';
 
 export const excludeColumns = <M extends PrismaModel, K extends PrismaModelKeys<M>>(model: M, columns: K[]) => {
   const result = {} as Record<PrismaModelExcludedKeys<M, K>, true>;

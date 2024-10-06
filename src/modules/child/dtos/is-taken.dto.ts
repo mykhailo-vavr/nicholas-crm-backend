@@ -1,29 +1,37 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsInt, IsString, ValidateNested } from 'class-validator';
+import {
+  IsInt,
+  IsNotEmpty,
+  IsNotEmptyObject,
+  IsPhoneNumber,
+  IsString,
+  MaxLength,
+  ValidateNested,
+} from 'class-validator';
 import { CreateAddressDto } from 'src/modules/address';
 
 export class IsChildTakenDto {
-  // @MaxLength(20)
-  // @IsNotEmpty()
+  @MaxLength(20)
+  @IsNotEmpty()
   @IsString()
   firstName: string;
 
-  // @MaxLength(20)
-  // @IsNotEmpty()
+  @MaxLength(20)
+  @IsNotEmpty()
   @IsString()
   lastName: string;
 
   @IsInt()
   birthYear: number;
 
-  // @IsPhoneNumber('UA')
+  @IsPhoneNumber('UA')
   @IsString()
   phone: string;
 
   @ApiProperty({ type: CreateAddressDto })
   @ValidateNested()
-  // @IsNotEmptyObject()
+  @IsNotEmptyObject()
   @Type(() => CreateAddressDto)
   address: CreateAddressDto;
 }

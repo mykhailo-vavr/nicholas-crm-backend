@@ -1,4 +1,4 @@
-import { Address } from 'src/types';
+import { Address } from '@prisma/client';
 
 export class BaseAddressResponse implements Address {
   id: number;

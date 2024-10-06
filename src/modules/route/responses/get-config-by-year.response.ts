@@ -1,4 +1,4 @@
-import { RouteConfig } from 'src/types';
+import { RouteConfig } from '@prisma/client';
 
 export class GetRouteConfigByYearResponse implements RouteConfig {
   id: number;

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { AddressService } from './service';
-import { MapModule } from '../map';
+import { GeoModule } from '../geo';
 
 @Module({
-  imports: [MapModule],
+  imports: [GeoModule],
   providers: [AddressService],
   exports: [AddressService],
 })

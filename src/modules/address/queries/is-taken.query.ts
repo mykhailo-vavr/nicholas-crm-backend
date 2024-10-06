@@ -1,4 +1,4 @@
-import { IsInt, IsNotEmpty, IsOptional, IsPositive, MaxLength, MinLength } from 'class-validator';
+import { IsInt, IsNotEmpty, IsOptional, IsPositive, MaxLength } from 'class-validator';
 
 export class IsAddressTakenQuery {
   @IsNotEmpty()
@@ -10,7 +10,7 @@ export class IsAddressTakenQuery {
   street: string;
 
   @IsOptional()
-  @MinLength(1)
+  @IsNotEmpty()
   @MaxLength(10)
   streetNumber?: string | null;
 

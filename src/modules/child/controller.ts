@@ -53,15 +53,15 @@ export class ChildController {
   }
 
   @ApiUnauthorizedResponse()
-  @Post('is-taken')
-  async isTaken(@Body() dto: IsChildTakenDto): Promise<IsChildTakenResponse> {
-    return this.childService.isTaken(dto);
-  }
-
-  @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @Get(':id')
   async getByPk(@Param('id') id: number): Promise<GetChildByPkResponse> {
     return this.childService.getByPk(id);
+  }
+
+  @ApiUnauthorizedResponse()
+  @Post('is-taken')
+  async isTaken(@Body() query: IsChildTakenDto): Promise<IsChildTakenResponse> {
+    return this.childService.isTaken(query);
   }
 }

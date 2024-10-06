@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Gift, Gender, GiftSubtype, GiftType } from 'src/types';
+import { Gender, Gift, GiftSubtype, GiftType } from '@prisma/client';
 
 export class GiftBaseResponse implements Gift {
   id: number;

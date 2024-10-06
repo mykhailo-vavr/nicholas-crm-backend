@@ -57,30 +57,11 @@ export class ChildService {
 
   async createMany(data: CreateManyChildrenDto): Promise<void> {
     await this.prismaService.createTransaction(async () => {
-      await Promise.all(
-        data.items.map(async (item) => {
-          const { address, ...childData } = item;
-          const { id } = await this.addressService.create(address);
-
-          return this.prismaService.client().child.create({
-            data: {
-              ...childData,
-              address: {
-                connect: {
-                  id,
-                },
-              },
-            },
-            include: {
-              address: true,
-            },
-          });
-        }),
-      );
+      await Promise.all(data.items.map((item) => this.create(item)));
     });
   }
 
-  async deactivate(id: number, data: DeactivateChildDto) {
+  async deactivate(id: number, data: DeactivateChildDto): Promise<void> {
     await this.getByPk(id);
 
     await this.prismaService.client().child.update({

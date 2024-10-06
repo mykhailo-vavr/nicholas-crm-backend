@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Child, Gender, NeedStatus } from 'src/types';
+import { Child, Gender, NeedStatus } from '@prisma/client';
 import { BaseAddressResponse } from 'src/modules/address/responses/base.response';
 
 export class ChildBaseResponse implements Omit<Child, 'addressId'> {
