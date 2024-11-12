@@ -1,6 +1,6 @@
 npm run format
 git update-index --again
 
-# npm run lint
+npm run lint
 
 npm run build
