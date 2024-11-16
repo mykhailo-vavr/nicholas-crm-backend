@@ -1,6 +1,6 @@
 import globals from 'globals';
 import jsPlugin from '@eslint/js';
-import tseslint from 'typescript-eslint';
+import tsEslint from 'typescript-eslint';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier/recommended';
 
@@ -9,7 +9,7 @@ export default [
   { ignores: ['dist', 'eslint.config.mjs'] },
   { languageOptions: { globals: globals.node } },
   jsPlugin.configs.recommended,
-  ...tseslint.configs.recommended,
+  ...tsEslint.configs.recommended,
   importPlugin.flatConfigs.recommended,
   {
     files: ['{src,test}/**/*.ts'],

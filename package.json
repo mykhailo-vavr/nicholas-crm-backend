@@ -1,10 +1,7 @@
 {
   "name": "nicholas-crm-backend",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
   "private": true,
-  "license": "UNLICENSED",
   "scripts": {
     "build": "rimraf ./dist && nest build",
     "start:dev": "nest start --watch",
