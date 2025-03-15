@@ -1,11 +1,13 @@
 import { plainToInstance } from 'class-transformer';
 import { IsEnum, IsNumber, IsString, validateSync } from 'class-validator';
 
-export enum EnvironmentsEnum {
-  DEVELOPMENT = 'development',
-  PRODUCTION = 'production',
-  TEST = 'test',
-}
+const ENVIRONMENTS = {
+  DEVELOPMENT: 'development',
+  PRODUCTION: 'production',
+  TEST: 'test',
+} as const;
+
+type Environment = (typeof ENVIRONMENTS)[keyof typeof ENVIRONMENTS];
 
 export class EnvironmentVariables {
   @IsString()
@@ -26,8 +28,8 @@ export class EnvironmentVariables {
   @IsString()
   URL_PREFIX: string;
 
-  @IsEnum(EnvironmentsEnum)
-  NODE_ENV: EnvironmentsEnum;
+  @IsEnum(ENVIRONMENTS)
+  NODE_ENV: Environment;
 
   @IsString()
   FUNCTIONS_API_URL: string;
@@ -39,7 +41,7 @@ export class EnvironmentVariables {
   GOOGLE_MAPS_API_KEY: string;
 }
 
-export const validateEnvironmentVariables = (config: Record<string, unknown>) => {
+export function validateEnvironmentVariables(config: Record<string, any>) {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
@@ -48,9 +50,9 @@ export const validateEnvironmentVariables = (config: Record<string, unknown>) =>
     skipMissingProperties: false,
   });
 
-  if (errors.length > 0) {
+  if (errors.length) {
     throw new Error(errors.toString());
   }
 
   return validatedConfig;
-};
+}

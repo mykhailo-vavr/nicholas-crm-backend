@@ -1,4 +1,4 @@
-export enum MetadataKeysEnum {
-  IS_PUBLIC = 'isPublic',
-  ROLES = 'roles',
-}
+export const METADATA_KEYS = {
+  IS_PUBLIC: 'IS_PUBLIC',
+  ROLES: 'ROLES',
+} as const;

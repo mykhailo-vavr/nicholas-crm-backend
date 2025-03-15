@@ -1,6 +1,6 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import { Prisma, PrismaClient } from '@prisma/client';
-import { DatabaseNamespaceKeysEnum, databaseNamespace } from 'src/database/namespace';
+import { DATABASE_NAMESPACE_KEYS, databaseNamespace } from 'src/database/namespace';
 
 // TODO: service for namespaces
 // TODO: Refactor this service
@@ -11,14 +11,14 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 
-  async createTransaction<T>(f: (t: Prisma.TransactionClient) => Promise<T>) {
+  async createTransaction<T>(callback: (t: Prisma.TransactionClient) => Promise<T>) {
     const transactionResult = await this.$transaction(async (tx) =>
       databaseNamespace.runPromise(async () => {
-        databaseNamespace.set(DatabaseNamespaceKeysEnum.TRANSACTION, tx);
+        databaseNamespace.set(DATABASE_NAMESPACE_KEYS.TRANSACTION, tx);
 
-        const result = await f(tx);
+        const result = await callback(tx);
 
-        databaseNamespace.set(DatabaseNamespaceKeysEnum.TRANSACTION, null);
+        databaseNamespace.set(DATABASE_NAMESPACE_KEYS.TRANSACTION, null);
         return result;
       }),
     );
@@ -28,17 +28,8 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   client() {
     const client: PrismaClient | Prisma.TransactionClient =
-      databaseNamespace.get(DatabaseNamespaceKeysEnum.TRANSACTION) ?? this;
+      databaseNamespace.get(DATABASE_NAMESPACE_KEYS.TRANSACTION) ?? this;
 
     return client;
   }
-
-  // async findManyAndCount(modelName: Uncapitalize<PrismaModel>) {
-  //   const [items, total] = await this.$transaction([
-  //     this.client()[modelName].findMany(),
-  //     this.client()[modelName].count(),
-  //   ]);
-
-  //   return [items, total];
-  // }
 }

@@ -1,6 +1,6 @@
 import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { MetadataKeysEnum } from 'src/utils';
+import { METADATA_KEYS } from 'src/utils';
 import { TokenService } from 'src/common/token';
 import { Request } from 'express';
 
@@ -12,7 +12,7 @@ export class AuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext) {
-    const isPublic = this.reflector.getAllAndOverride<boolean>(MetadataKeysEnum.IS_PUBLIC, [
+    const isPublic = this.reflector.getAllAndOverride<boolean>(METADATA_KEYS.IS_PUBLIC, [
       context.getHandler(),
       context.getClass(),
     ]);

@@ -1,10 +1,10 @@
 import * as cls from 'cls-hooked';
-import { NamespacesEnum } from 'src/utils';
+import { NAMESPACES } from 'src/utils';
 
 // TODO: utility for namespaces
 
-export const databaseNamespace = cls.createNamespace(NamespacesEnum.DATABASE);
+export const databaseNamespace = cls.createNamespace(NAMESPACES.DATABASE);
 
-export enum DatabaseNamespaceKeysEnum {
-  TRANSACTION = 'transaction',
-}
+export const DATABASE_NAMESPACE_KEYS = {
+  TRANSACTION: 'TRANSACTION',
+} as const;

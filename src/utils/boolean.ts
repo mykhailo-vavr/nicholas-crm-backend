@@ -1,1 +1,3 @@
-export const isTruthy = <T>(value: T | null | undefined | false | 0 | ''): value is T => Boolean(value);
+export function isTruthy<T>(value: T | null | undefined | false | 0 | ''): value is T {
+  return !!value;
+}

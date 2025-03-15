@@ -33,7 +33,10 @@ import { RouteModule } from '../route';
   controllers: [AppController],
   providers: [
     AppService,
-    { provide: APP_GUARD, useClass: AuthGuard },
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

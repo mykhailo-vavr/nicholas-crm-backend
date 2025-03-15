@@ -1,15 +1,63 @@
-import { getApp } from './app';
 import { ConfigService } from './common';
-import { setupDocs } from './docs';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { PaginatedDto } from './utils';
+import { NestFactory } from '@nestjs/core';
+import helmet from 'helmet';
+import { AppModule } from './modules/app';
 
-const bootstrap = async () => {
-  const app = await getApp();
+async function getApp() {
+  const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
 
-  setupDocs(configService.get('DOCS_URL'), app);
+  app.use(helmet());
+
+  app.enableCors({
+    origin: configService.get('CORS_ALLOW_ORIGINS').split(','),
+    credentials: true,
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  app.setGlobalPrefix(configService.get('URL_PREFIX'), {
+    exclude: [''],
+  });
+
+  return app;
+}
+
+function setupDocs(app: INestApplication<any>) {
+  const configService = app.get(ConfigService);
+
+  const document = SwaggerModule.createDocument(
+    app,
+    new DocumentBuilder()
+      .setTitle('Nicholas CRM')
+      .setDescription('The Nicholas CRM API description')
+      .setVersion('1.0')
+      .addBearerAuth()
+      .build(),
+    { extraModels: [PaginatedDto] },
+  );
+
+  SwaggerModule.setup(configService.get('DOCS_URL'), app, document);
+}
+
+export async function bootstrap() {
+  const app = await getApp();
+
+  setupDocs(app);
+
+  const configService = app.get(ConfigService);
 
   await app.listen(configService.get('APP_PORT'));
-};
+}
 
 bootstrap();

@@ -1,5 +1,9 @@
-import { hash as bcryptHash, compare } from 'bcrypt';
+import { hash as hashOriginal, compare } from 'bcrypt';
 
-export const hash = async (password: string, saltRounds = 10) => bcryptHash(password, saltRounds);
+export async function hash(password: string, saltRounds = 10) {
+  return hashOriginal(password, saltRounds);
+}
 
-export const validateHash = (password: string, hashedPassword: string) => compare(password, hashedPassword);
+export async function validateHash(password: string, hashedPassword: string) {
+  return compare(password, hashedPassword);
+}

@@ -1,3 +1,3 @@
-export enum NamespacesEnum {
-  DATABASE = 'database',
-}
+export const NAMESPACES = {
+  DATABASE: 'DATABASE',
+} as const;
