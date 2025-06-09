@@ -63,6 +63,7 @@
     "cls-hooked": "4.2.2",
     "express": "5.1.0",
     "helmet": "8.1.0",
+    "nestjs-zod": "4.3.1",
     "prettier-plugin-organize-imports": "4.1.0",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
@@ -82,7 +83,7 @@
     "@types/jest": "29.5.14",
     "@types/node": "22.15.30",
     "@types/supertest": "6.0.3",
-    "@typescript-eslint/parser": "8.33.1",
+    "@typescript-eslint/parser": "8.34.0",
     "dotenv-cli": "8.0.0",
     "eslint": "9.28.0",
     "eslint-config-prettier": "10.1.5",
@@ -102,6 +103,6 @@
     "ts-node": "10.9.2",
     "tsconfig-paths": "4.2.0",
     "typescript": "5.8.3",
-    "typescript-eslint": "8.33.1"
+    "typescript-eslint": "8.34.0"
   }
 }

@@ -1,27 +1,17 @@
-import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
-import { IsEmail, IsEnum, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CreateUserDto {
-  @IsNotEmpty()
-  @IsString()
-  firstName: string;
+const createUserSchema = z.object({
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  phone: z
+    .string()
+    .min(1)
+    .regex(/^\+380\d{9}$/),
+  email: z.string().email(),
+  roles: z.array(z.nativeEnum(Role)),
+  password: z.string().min(1),
+});
 
-  @IsNotEmpty()
-  @IsString()
-  lastName: string;
-
-  @IsPhoneNumber('UA')
-  phone: string;
-
-  @IsEmail()
-  email: string;
-
-  @ApiProperty({ enum: Role, enumName: 'ROLES', isArray: true })
-  @IsEnum(Role, { each: true })
-  roles: Role[];
-
-  @IsNotEmpty()
-  @IsString()
-  password: string;
-}
+export class CreateUserDto extends createZodDto(createUserSchema) {}

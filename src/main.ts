@@ -1,12 +1,13 @@
-import { INestApplication, ValidationPipe } from '@nestjs/common';
+import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { patchNestJsSwagger, ZodValidationPipe } from 'nestjs-zod';
 import { ConfigService, SuperJsonInterceptor, SuperJsonPipe } from './common';
 import { AppModule } from './modules/app';
 import { PaginatedDto } from './utils';
 
-async function getApp() {
+async function createApp() {
   const app = await NestFactory.create(AppModule);
 
   const configService = app.get(ConfigService);
@@ -20,14 +21,7 @@ async function getApp() {
 
   app.useGlobalInterceptors(new SuperJsonInterceptor());
 
-  app.useGlobalPipes(
-    new SuperJsonPipe(),
-    new ValidationPipe({
-      transform: true,
-      whitelist: true,
-      forbidNonWhitelisted: true,
-    }),
-  );
+  app.useGlobalPipes(new SuperJsonPipe(), new ZodValidationPipe());
 
   app.setGlobalPrefix(configService.get('URL_PREFIX'), {
     exclude: [''],
@@ -38,6 +32,8 @@ async function getApp() {
 
 function setupDocs(app: INestApplication<any>) {
   const configService = app.get(ConfigService);
+
+  patchNestJsSwagger();
 
   const document = SwaggerModule.createDocument(
     app,
@@ -53,8 +49,8 @@ function setupDocs(app: INestApplication<any>) {
   SwaggerModule.setup(configService.get('DOCS_URL'), app, document);
 }
 
-export async function bootstrap() {
-  const app = await getApp();
+async function bootstrap() {
+  const app = await createApp();
 
   setupDocs(app);
 
