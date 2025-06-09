@@ -1,4 +1,4 @@
-import { ConfigService } from './common';
+import { ConfigService, SuperJsonInterceptor, SuperJsonPipe } from './common';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { PaginatedDto } from './utils';
@@ -18,7 +18,10 @@ async function getApp() {
     credentials: true,
   });
 
+  app.useGlobalInterceptors(new SuperJsonInterceptor());
+
   app.useGlobalPipes(
+    new SuperJsonPipe(),
     new ValidationPipe({
       transform: true,
       whitelist: true,

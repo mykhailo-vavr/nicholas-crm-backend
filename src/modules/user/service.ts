@@ -1,33 +1,15 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { hash, excludeColumns, getPaginationOptions, formatPaginatedResponse, getSortOptions } from 'src/utils';
 import { Prisma } from '@prisma/client';
-import { PrismaService } from '../../common';
-import { CreateUserDto, DeactivateUserDto } from './dtos';
+import { BaseResponse, PrismaService } from '../../common';
+import { CreateUserDto, UpdateUserDto } from './dtos';
 import { GetAllUsersQuery, IsUserTakenQuery } from './queries';
-import {
-  CreateUserResponse,
-  DeleteUserResponse,
-  GetAllUsersResponse,
-  GetUserByPkResponse,
-  IsUserTakenResponse,
-} from './responses';
 
 @Injectable()
 export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
-  async activate(id: number) {
-    await this.getByPk(id);
-
-    await this.prismaService.client().user.update({
-      where: { id },
-      data: {
-        isActive: true,
-      },
-    });
-  }
-
-  async create(data: CreateUserDto): Promise<CreateUserResponse> {
+  async create(data: CreateUserDto) {
     const { isTaken } = await this.isTaken({
       email: data.email,
       phone: data.phone,
@@ -44,33 +26,15 @@ export class UserService {
         ...data,
         password: hashedPassword,
       },
-      select: excludeColumns('User', ['password']),
+      select: {
+        id: true,
+      },
     });
 
     return user;
   }
 
-  async deactivate(id: number, data: DeactivateUserDto) {
-    await this.getByPk(id);
-
-    await this.prismaService.client().user.update({
-      where: { id },
-      data: {
-        isActive: false,
-        deactivationReason: data.deactivationReason,
-      },
-    });
-  }
-
-  async delete(id: number): Promise<DeleteUserResponse> {
-    await this.getByPk(id);
-
-    return this.prismaService.client().user.delete({
-      where: { id },
-    });
-  }
-
-  async getAll(query: GetAllUsersQuery): Promise<GetAllUsersResponse> {
+  async getAll(query: GetAllUsersQuery) {
     const {
       search = '',
       sort = Prisma.UserScalarFieldEnum.id,
@@ -98,7 +62,7 @@ export class UserService {
       this.prismaService.client().user.count({ where }),
     ]);
 
-    return formatPaginatedResponse({ items: users, total });
+    return formatPaginatedResponse({ items: [users[0]], total });
   }
 
   async getByEmail(email: string) {
@@ -107,7 +71,7 @@ export class UserService {
     });
   }
 
-  async getByPk(id: number): Promise<GetUserByPkResponse> {
+  async getByPk(id: number) {
     const user = await this.prismaService.client().user.findUnique({
       where: { id },
       select: excludeColumns('User', ['password']),
@@ -120,7 +84,7 @@ export class UserService {
     return user;
   }
 
-  async isTaken(query: IsUserTakenQuery): Promise<IsUserTakenResponse> {
+  async isTaken(query: IsUserTakenQuery) {
     const [userEmail, userPhone] = await Promise.all([
       this.prismaService.client().user.findFirst({
         where: { email: query.email },
@@ -135,5 +99,19 @@ export class UserService {
       email: !!userEmail,
       phone: !!userPhone,
     };
+  }
+
+  async update(id: number, data: UpdateUserDto): Promise<BaseResponse> {
+    await this.getByPk(id);
+
+    await this.prismaService.client().user.update({
+      where: { id },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+      },
+    });
+
+    return { ok: true };
   }
 }

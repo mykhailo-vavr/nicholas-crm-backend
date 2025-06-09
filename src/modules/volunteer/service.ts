@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma';
-import { Role } from '@prisma/client';
 import { CreateVolunteerDto } from './dto';
 import { UserService } from '../user';
 
@@ -17,7 +16,7 @@ export class VolunteerService {
     const createdVolunteer = await this.prismaService.createTransaction(async () => {
       const { id } = await this.userService.create({
         ...user,
-        role: Role.volunteer,
+        roles: ['volunteer'],
       });
 
       const volunteer = await this.prismaService.client().volunteer.create({

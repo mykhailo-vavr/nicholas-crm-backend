@@ -12,8 +12,8 @@ export class UserBaseResponse implements Omit<User, 'password'> {
 
   email: string;
 
-  @ApiProperty({ enum: Role, enumName: 'RolesEnum' })
-  role: Role;
+  @ApiProperty({ enum: Role, enumName: 'ROLES', isArray: true })
+  roles: Role[];
 
   isActive: boolean;
 

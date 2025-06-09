@@ -1,3 +1,3 @@
 import { User } from '@prisma/client';
 
-export type UserTokenData = Pick<User, 'id' | 'role'>;
+export type UserTokenData = Pick<User, 'id' | 'roles'>;

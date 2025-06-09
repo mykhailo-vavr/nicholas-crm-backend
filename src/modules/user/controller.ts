@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
+  ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -9,15 +10,11 @@ import {
 import { User } from 'src/decorators';
 import { UserTokenData } from 'src/types';
 import { UserService } from './service';
-import { CreateUserDto, DeactivateUserDto } from './dtos';
+import { CreateUserDto, UpdateUserDto } from './dtos';
 import { GetAllUsersQuery, IsUserTakenQuery } from './queries';
-import {
-  CreateUserResponse,
-  DeleteUserResponse,
-  GetAllUsersResponse,
-  GetUserByPkResponse,
-  IsUserTakenResponse,
-} from './responses';
+import { GetAllUsersResponse, GetUserByPkResponse, IsUserTakenResponse } from './responses';
+import { BaseResponse } from 'src/common';
+import { hasPermission } from 'src/permissions';
 
 @ApiBearerAuth()
 @ApiTags('User')
@@ -26,36 +23,27 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @Patch(':id/activate')
-  async activate(@Param('id') id: number) {
-    return this.userService.activate(id);
-  }
-
-  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
   @ApiConflictResponse()
   @Post()
-  async create(@Body() dto: CreateUserDto): Promise<CreateUserResponse> {
-    return this.userService.create(dto);
+  async create(@Body() dto: CreateUserDto, @User() user: UserTokenData): Promise<BaseResponse> {
+    if (!hasPermission(user.roles, 'user:create')) {
+      throw new ForbiddenException('У вас немає дозволу на створення користувача.');
+    }
+
+    await this.userService.create(dto);
+
+    return { ok: true };
   }
 
   @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @Patch(':id/deactivate')
-  async deactivate(@Param('id') id: number, @Body() dto: DeactivateUserDto) {
-    return this.userService.deactivate(id, dto);
-  }
-
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @Delete(':id')
-  async delete(@Param('id') id: number): Promise<DeleteUserResponse> {
-    return this.userService.delete(id);
-  }
-
-  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
   @Get()
-  async getAll(@Query() query: GetAllUsersQuery): Promise<GetAllUsersResponse> {
+  async getAll(@Query() query: GetAllUsersQuery, @User() user: UserTokenData): Promise<GetAllUsersResponse> {
+    if (!hasPermission(user.roles, 'user:read')) {
+      throw new ForbiddenException('У вас немає дозволу на читання даних користувачів.');
+    }
+
     return this.userService.getAll(query);
   }
 
@@ -75,7 +63,22 @@ export class UserController {
   @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @Get(':id')
-  async getByPk(@Param('id') id: number): Promise<GetUserByPkResponse> {
+  async getByPk(@Param('id', ParseIntPipe) id: number): Promise<GetUserByPkResponse> {
     return this.userService.getByPk(id);
+  }
+
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateUserDto,
+    @User() user: UserTokenData,
+  ): Promise<BaseResponse> {
+    if (!hasPermission(user.roles, 'user:update')) {
+      throw new ForbiddenException('У вас немає дозволу на оновлення даних користувача.');
+    }
+
+    return this.userService.update(id, dto);
   }
 }

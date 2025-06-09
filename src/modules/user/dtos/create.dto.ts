@@ -1,8 +1,8 @@
 import { IsEmail, IsEnum, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { Prisma, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 
-export class CreateUserDto implements Prisma.UserCreateInput {
+export class CreateUserDto {
   @IsNotEmpty()
   @IsString()
   firstName: string;
@@ -17,9 +17,9 @@ export class CreateUserDto implements Prisma.UserCreateInput {
   @IsEmail()
   email: string;
 
-  @ApiProperty({ enum: Role, enumName: 'RolesEnum' })
-  @IsEnum(Role)
-  role: Role;
+  @ApiProperty({ enum: Role, enumName: 'ROLES', isArray: true })
+  @IsEnum(Role, { each: true })
+  roles: Role[];
 
   @IsNotEmpty()
   @IsString()
