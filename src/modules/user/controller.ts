@@ -50,7 +50,7 @@ export class UserController {
   @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @Get('me')
-  async getMe(@User() user: UserTokenData) {
+  async getMe(@User() user: UserTokenData): Promise<GetUserByPkResponse> {
     return this.userService.getByPk(user.id);
   }
 

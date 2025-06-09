@@ -62,7 +62,7 @@ export class UserService {
       this.prismaService.client().user.count({ where }),
     ]);
 
-    return formatPaginatedResponse({ items: [users[0]], total });
+    return formatPaginatedResponse({ items: users, total });
   }
 
   async getByEmail(email: string) {
