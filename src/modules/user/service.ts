@@ -1,6 +1,6 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { hash, excludeColumns, getPaginationOptions, formatPaginatedResponse, getSortOptions } from 'src/utils';
 import { Prisma } from '@prisma/client';
+import { excludeColumns, formatPaginatedResponse, getPaginationOptions, getSortOptions, hash } from 'src/utils';
 import { BaseResponse, PrismaService } from '../../common';
 import { CreateUserDto, UpdateUserDto } from './dtos';
 import { GetAllUsersQuery, IsUserTakenQuery } from './queries';

@@ -1,9 +1,9 @@
 import { Body, Controller, Get, Param, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiNotFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { RouteService } from './service';
+import { CreateRoutesDto } from './dto/create.dto';
 import { GetRouteConfigByYearResponse } from './responses/get-config-by-year.response';
 import { GetRoutesConfigResponse } from './responses/get-configs.response';
-import { CreateRoutesDto } from './dto/create.dto';
+import { RouteService } from './service';
 
 @ApiBearerAuth()
 @ApiTags('Route')

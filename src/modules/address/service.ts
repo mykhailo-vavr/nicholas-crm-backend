@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma';
-import { IsAddressTakenQuery } from './queries';
-import { IsAddressTakenResponse } from './responses';
 import { GeoService } from '../geo';
 import { CreateAddressDto } from './dtos';
+import { IsAddressTakenQuery } from './queries';
+import { IsAddressTakenResponse } from './responses';
 
 @Injectable()
 export class AddressService {

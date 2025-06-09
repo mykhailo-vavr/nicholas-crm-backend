@@ -1,13 +1,13 @@
-import { Prisma } from '@prisma/client';
-import { formatPaginatedResponse, getPaginationOptions, getSortOptions } from 'src/utils';
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/common';
-import { CreateChildDto, DeactivateChildDto, IsChildTakenDto } from './dtos';
-import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
-import { GetAllChildrenQuery } from './queries';
+import { formatPaginatedResponse, getPaginationOptions, getSortOptions } from 'src/utils';
 import { AddressService } from '../address';
-import { IsChildTakenResponse } from './responses/is-taken.response';
+import { CreateChildDto, DeactivateChildDto, IsChildTakenDto } from './dtos';
 import { CreateManyChildrenDto } from './dtos/create-many.dto';
+import { GetAllChildrenQuery } from './queries';
+import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
+import { IsChildTakenResponse } from './responses/is-taken.response';
 
 // TODO: create isTaken method (firstName, lastName, birthYear)
 

@@ -1,9 +1,9 @@
-import { Test, TestingModule } from '@nestjs/testing';
 import { ConfigModule } from '@nestjs/config';
+import { Test, TestingModule } from '@nestjs/testing';
+import { PrismaModule } from '../../common/prisma';
+import { UserModule } from '../user';
 import { AuthController } from './controller';
 import { AuthService } from './service';
-import { UserModule } from '../user';
-import { PrismaModule } from '../../common/prisma';
 
 describe('AuthController', () => {
   let controller: AuthController;

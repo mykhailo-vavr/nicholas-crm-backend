@@ -1,6 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import { Gender, GiftSubtype, GiftType, Prisma } from '@prisma/client';
 import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsPositive, MaxLength, Min, MinLength } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateGiftDto implements Prisma.GiftCreateInput {
   @IsNotEmpty()

@@ -1,18 +1,18 @@
-import { ConfigModule } from '@nestjs/config';
 import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
 import { APP_GUARD } from '@nestjs/core';
-import { validateEnvironmentVariables } from 'src/utils';
 import { AuthGuard, RolesGuard } from 'src/guards';
-import { AppController } from './controller';
-import { AppService } from './service';
-import { AuthModule } from '../auth';
+import { validateEnvironmentVariables } from 'src/utils';
 import { PrismaModule, TokenModule } from '../../common';
-import { UserModule } from '../user';
 import { AddressModule } from '../address';
+import { AuthModule } from '../auth';
 import { ChildModule } from '../child';
-import { VolunteerModule } from '../volunteer';
 import { GiftModule } from '../gift';
 import { RouteModule } from '../route';
+import { UserModule } from '../user';
+import { VolunteerModule } from '../volunteer';
+import { AppController } from './controller';
+import { AppService } from './service';
 
 @Module({
   imports: [

@@ -1,9 +1,9 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { validateHash } from 'src/utils';
 import { TokenService } from 'src/common/token';
+import { validateHash } from 'src/utils';
 import { UserService } from '../user';
-import { SignInResponse } from './responses';
 import { SignInDto } from './dtos';
+import { SignInResponse } from './responses';
 
 @Injectable()
 export class AuthService {

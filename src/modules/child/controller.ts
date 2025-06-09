@@ -1,11 +1,11 @@
-import { Controller, Get, Post, Body, Param, Delete, Query, Patch } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiNotFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { ChildService } from './service';
 import { CreateChildDto, DeactivateChildDto, IsChildTakenDto } from './dtos';
-import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
-import { GetAllChildrenQuery } from './queries';
-import { IsChildTakenResponse } from './responses/is-taken.response';
 import { CreateManyChildrenDto } from './dtos/create-many.dto';
+import { GetAllChildrenQuery } from './queries';
+import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
+import { IsChildTakenResponse } from './responses/is-taken.response';
+import { ChildService } from './service';
 
 @ApiBearerAuth()
 @ApiTags('Child')

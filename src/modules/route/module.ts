@@ -1,10 +1,10 @@
-import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
-import { RouteService } from './service';
-import { RouteController } from './controller';
-import { ChildModule } from '../child';
+import { Module } from '@nestjs/common';
 import { AddressModule } from '../address';
+import { ChildModule } from '../child';
 import { VolunteerModule } from '../volunteer';
+import { RouteController } from './controller';
+import { RouteService } from './service';
 
 @Module({
   imports: [AddressModule, ChildModule, HttpModule, VolunteerModule],

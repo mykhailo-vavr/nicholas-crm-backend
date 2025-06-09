@@ -1,9 +1,9 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { Public } from 'src/decorators';
 import { ApiNotFoundResponse, ApiTags } from '@nestjs/swagger';
-import { AuthService } from './service';
+import { Public } from 'src/decorators';
 import { SignInDto } from './dtos';
 import { SignInResponse } from './responses';
+import { AuthService } from './service';
 
 @ApiTags('Auth')
 @Controller('auth')

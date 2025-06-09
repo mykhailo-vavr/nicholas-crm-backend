@@ -7,14 +7,14 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { BaseResponse } from 'src/common';
 import { User } from 'src/decorators';
+import { hasPermission } from 'src/permissions';
 import { UserTokenData } from 'src/types';
-import { UserService } from './service';
 import { CreateUserDto, UpdateUserDto } from './dtos';
 import { GetAllUsersQuery, IsUserTakenQuery } from './queries';
 import { GetAllUsersResponse, GetUserByPkResponse, IsUserTakenResponse } from './responses';
-import { BaseResponse } from 'src/common';
-import { hasPermission } from 'src/permissions';
+import { UserService } from './service';
 
 @ApiBearerAuth()
 @ApiTags('User')

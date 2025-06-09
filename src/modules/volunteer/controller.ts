@@ -1,8 +1,8 @@
-import { Controller, Get, Param, Delete, Post, Body } from '@nestjs/common';
-import { Public } from 'src/decorators';
+import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
 import { ApiConflictResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
-import { VolunteerService } from './service';
+import { Public } from 'src/decorators';
 import { CreateVolunteerDto } from './dto';
+import { VolunteerService } from './service';
 
 @ApiTags('Volunteer')
 @Controller('volunteer')

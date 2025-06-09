@@ -1,9 +1,10 @@
 import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { getPaginationOptions, formatPaginatedResponse, getSortOptions } from 'src/utils';
 import { Prisma } from '@prisma/client';
+import { formatPaginatedResponse, getPaginationOptions, getSortOptions } from 'src/utils';
 import { PrismaService } from '../../common';
 import { CreateGiftDto } from './dtos';
 import { GetAllGiftsQuery } from './queries';
+import { IsGiftTakenQuery } from './queries/is-taken.query';
 import {
   CreateGiftResponse,
   DeleteGiftResponse,
@@ -11,7 +12,6 @@ import {
   GetGiftByPkResponse,
   IsGiftTakenResponse,
 } from './responses';
-import { IsGiftTakenQuery } from './queries/is-taken.query';
 
 @Injectable()
 export class GiftService {

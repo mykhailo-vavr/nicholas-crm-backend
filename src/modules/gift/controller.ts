@@ -6,9 +6,9 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { GiftService } from './service';
 import { CreateGiftDto } from './dtos';
 import { GetAllGiftsQuery } from './queries';
+import { IsGiftTakenQuery } from './queries/is-taken.query';
 import {
   CreateGiftResponse,
   DeleteGiftResponse,
@@ -16,7 +16,7 @@ import {
   GetGiftByPkResponse,
   IsGiftTakenResponse,
 } from './responses';
-import { IsGiftTakenQuery } from './queries/is-taken.query';
+import { GiftService } from './service';
 
 @ApiBearerAuth()
 @ApiTags('Gift')

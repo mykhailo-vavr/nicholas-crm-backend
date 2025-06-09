@@ -1,10 +1,10 @@
-import { ConfigService, SuperJsonInterceptor, SuperJsonPipe } from './common';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { PaginatedDto } from './utils';
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
+import { ConfigService, SuperJsonInterceptor, SuperJsonPipe } from './common';
 import { AppModule } from './modules/app';
+import { PaginatedDto } from './utils';
 
 async function getApp() {
   const app = await NestFactory.create(AppModule);
