@@ -75,6 +75,7 @@ export class UserService {
         email: true,
         roles: true,
         isActive: true,
+        deactivationReason: true,
       },
     });
 

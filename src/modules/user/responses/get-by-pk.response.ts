@@ -16,4 +16,6 @@ export class GetUserByPkResponse {
   roles: Role[];
 
   isActive: boolean;
+
+  deactivationReason: string | null;
 }
