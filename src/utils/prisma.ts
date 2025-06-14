@@ -1,6 +1,9 @@
 import { Prisma } from '@prisma/client';
 import { PrismaModel, PrismaModelExcludedKeys, PrismaModelKeys } from 'src/types';
 
+/**
+ * @deprecated
+ */
 export function excludeColumns<M extends PrismaModel, K extends PrismaModelKeys<M>>(model: M, columns: K[]) {
   const result = {} as Record<PrismaModelExcludedKeys<M, K>, true>;
 
@@ -13,6 +16,9 @@ export function excludeColumns<M extends PrismaModel, K extends PrismaModelKeys<
   return result;
 }
 
+/**
+ * @deprecated
+ */
 export function getPaginationOptions({ page = 0, limit = 20 }: { page?: number; limit?: number }) {
   return {
     skip: page * limit,
@@ -20,12 +26,18 @@ export function getPaginationOptions({ page = 0, limit = 20 }: { page?: number; 
   };
 }
 
+/**
+ * @deprecated
+ */
 export function getSortOptions({ sort, order }: { sort: string; order: Prisma.SortOrder }) {
   return {
     orderBy: { [sort]: order },
   };
 }
 
+/**
+ * @deprecated
+ */
 export function formatPaginatedResponse<T>({ items, total }: { items: T[]; total: number }) {
   return {
     items,

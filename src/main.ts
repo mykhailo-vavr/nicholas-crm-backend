@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import helmet from 'helmet';
-import { patchNestJsSwagger, ZodValidationPipe } from 'nestjs-zod';
+import { ZodValidationPipe } from 'nestjs-zod';
 import { ConfigService, SuperJsonInterceptor, SuperJsonPipe } from './common';
 import { AppModule } from './modules/app';
 import { PaginatedDto } from './utils';
@@ -32,8 +32,6 @@ async function createApp() {
 
 function setupDocs(app: INestApplication<any>) {
   const configService = app.get(ConfigService);
-
-  patchNestJsSwagger();
 
   const document = SwaggerModule.createDocument(
     app,

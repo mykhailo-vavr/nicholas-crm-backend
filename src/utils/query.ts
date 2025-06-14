@@ -3,22 +3,25 @@ import { Prisma } from '@prisma/client';
 import { Type } from 'class-transformer';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 
-export interface IPaginationQuery {
+interface IPaginationQuery {
   page?: number;
   limit?: number;
 }
 
-export interface ISearchQuery {
+interface ISearchQuery {
   search?: string;
 }
 
-export interface ISortQuery<T extends Record<string, string>> {
+interface ISortQuery<T extends Record<string, string>> {
   sort?: T[string];
   order?: Prisma.SortOrder;
 }
 
-export type GetSortQueryParams = { sortEnum: Record<string, string>; sortEnumName: `${string}SortFieldsEnum` };
+type GetSortQueryParams = { sortEnum: Record<string, string>; sortEnumName: `${string}SortFieldsEnum` };
 
+/**
+ * @deprecated use nestjs-zod instead
+ */
 export const getGeneralGetAllQuery = ({ sortEnum, sortEnumName }: GetSortQueryParams) => {
   class GetAllQuery implements IPaginationQuery, ISearchQuery, ISortQuery<typeof sortEnum> {
     @ApiPropertyOptional()

@@ -1,30 +1,44 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
+import { PrismaService } from 'src/common';
 import { TokenService } from 'src/common/token';
 import { validateHash } from 'src/utils';
-import { UserService } from '../user';
 import { SignInDto } from './dtos';
-import { SignInResponse } from './responses';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
+    private readonly prismaService: PrismaService,
     private readonly tokenService: TokenService,
   ) {}
 
-  async signIn(data: SignInDto): Promise<SignInResponse> {
-    const user = await this.userService.getByEmail(data.email);
+  async signIn(data: SignInDto) {
+    const user = await this.prismaService.user.findUnique({
+      where: {
+        email: data.email,
+      },
+      select: {
+        id: true,
+        firstName: true,
+        lastName: true,
+        email: true,
+        phone: true,
+        password: true,
+        roles: true,
+        isActive: true,
+        deactivationReason: true,
+      },
+    });
 
     if (!user) {
-      throw new NotFoundException('Email or password are incorrect');
+      throw new NotFoundException('Неправильна електронна адреса або пароль.');
     }
 
     const { password, ...userData } = user;
 
-    const validPassword = await validateHash(data.password, password);
+    const isPasswordValid = await validateHash(data.password, password);
 
-    if (!validPassword) {
-      throw new NotFoundException('Email or password are incorrect');
+    if (!isPasswordValid) {
+      throw new NotFoundException('Неправильна електронна адреса або пароль.');
     }
 
     const accessToken = await this.tokenService.generate.access({

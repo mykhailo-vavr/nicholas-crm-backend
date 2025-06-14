@@ -1,7 +1,6 @@
 import { Body, Controller, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
-  ApiConflictResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiTags,
@@ -24,7 +23,6 @@ export class UserController {
 
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
-  @ApiConflictResponse()
   @Post()
   async create(@Body() dto: CreateUserDto, @User() user: UserTokenData): Promise<BaseResponse> {
     if (!hasPermission(user.roles, 'user:create')) {
@@ -48,22 +46,37 @@ export class UserController {
   }
 
   @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
   @ApiNotFoundResponse()
   @Get('me')
   async getMe(@User() user: UserTokenData): Promise<GetUserByPkResponse> {
+    if (!hasPermission(user.roles, 'user:read')) {
+      throw new ForbiddenException('У вас немає дозволу на читання даних користувача.');
+    }
+
     return this.userService.getByPk(user.id);
   }
 
   @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
   @Get('is-taken')
-  async isTaken(@Query() query: IsUserTakenQuery): Promise<IsUserTakenResponse> {
+  async isTaken(@Query() query: IsUserTakenQuery, @User() user: UserTokenData): Promise<IsUserTakenResponse> {
+    if (!hasPermission(user.roles, 'user:read')) {
+      throw new ForbiddenException('У вас немає дозволу на читання даних користувача.');
+    }
+
     return this.userService.isTaken(query);
   }
 
   @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
   @ApiNotFoundResponse()
   @Get(':id')
-  async getByPk(@Param('id', ParseIntPipe) id: number): Promise<GetUserByPkResponse> {
+  async getByPk(@Param('id', ParseIntPipe) id: number, @User() user: UserTokenData): Promise<GetUserByPkResponse> {
+    if (!hasPermission(user.roles, 'user:read')) {
+      throw new ForbiddenException('У вас немає дозволу на читання даних користувача.');
+    }
+
     return this.userService.getByPk(id);
   }
 
