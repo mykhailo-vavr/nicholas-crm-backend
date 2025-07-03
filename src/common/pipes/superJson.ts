@@ -1,12 +1,9 @@
 import { Injectable, PipeTransform } from '@nestjs/common';
-// import superjson from 'superjson';
+import { SuperJSON } from 'superjson';
 
 @Injectable()
 export class SuperJsonPipe implements PipeTransform {
   transform(value: any) {
-    // if (value?.json && value?.meta) {
-    //   return superjson.deserialize(value);
-    // }
-    return value;
+    return value?.json && value?.meta ? SuperJSON.deserialize(value) : value;
   }
 }

@@ -25,7 +25,7 @@ export class UserController {
   @ApiForbiddenResponse()
   @Post()
   async create(@Body() dto: CreateUserDto, @User() user: UserTokenData): Promise<BaseResponse> {
-    if (!hasPermission(user.roles, 'user:create')) {
+    if (!hasPermission(user, 'user:create')) {
       throw new ForbiddenException('У вас немає дозволу на створення користувача.');
     }
 
@@ -38,7 +38,7 @@ export class UserController {
   @ApiForbiddenResponse()
   @Get()
   async getAll(@Query() query: GetAllUsersQuery, @User() user: UserTokenData): Promise<GetAllUsersResponse> {
-    if (!hasPermission(user.roles, 'user:read')) {
+    if (!hasPermission(user, 'user:read')) {
       throw new ForbiddenException('У вас немає дозволу на читання даних користувачів.');
     }
 
@@ -50,7 +50,7 @@ export class UserController {
   @ApiNotFoundResponse()
   @Get('me')
   async getMe(@User() user: UserTokenData): Promise<GetUserByPkResponse> {
-    if (!hasPermission(user.roles, 'user:read')) {
+    if (!hasPermission(user, 'user:read')) {
       throw new ForbiddenException('У вас немає дозволу на читання даних користувача.');
     }
 
@@ -61,7 +61,7 @@ export class UserController {
   @ApiForbiddenResponse()
   @Get('is-taken')
   async isTaken(@Query() query: IsUserTakenQuery, @User() user: UserTokenData): Promise<IsUserTakenResponse> {
-    if (!hasPermission(user.roles, 'user:read')) {
+    if (!hasPermission(user, 'user:read')) {
       throw new ForbiddenException('У вас немає дозволу на читання даних користувача.');
     }
 
@@ -73,7 +73,7 @@ export class UserController {
   @ApiNotFoundResponse()
   @Get(':id')
   async getByPk(@Param('id', ParseIntPipe) id: number, @User() user: UserTokenData): Promise<GetUserByPkResponse> {
-    if (!hasPermission(user.roles, 'user:read')) {
+    if (!hasPermission(user, 'user:read')) {
       throw new ForbiddenException('У вас немає дозволу на читання даних користувача.');
     }
 
@@ -88,7 +88,7 @@ export class UserController {
     @Body() dto: UpdateUserDto,
     @User() user: UserTokenData,
   ): Promise<BaseResponse> {
-    if (!hasPermission(user.roles, 'user:update')) {
+    if (!hasPermission(user, 'user:update')) {
       throw new ForbiddenException('У вас немає дозволу на оновлення даних користувача.');
     }
 

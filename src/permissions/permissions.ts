@@ -1,4 +1,5 @@
 import { Role } from '@prisma/client';
+import { UserTokenData } from 'src/types';
 
 export type Permission =
   /**
@@ -21,7 +22,7 @@ export const ROLE_PERMISSIONS = {
   volunteer: [],
 } satisfies Record<Role, Permission[]>;
 
-export function hasPermission(roles: Role[], permission: Permission) {
+export function hasPermission({ roles }: Pick<UserTokenData, 'roles'>, permission: Permission) {
   // @ts-expect-error - помилка TS з includes
   return roles.some((role) => ROLE_PERMISSIONS[role].includes(permission));
 }
