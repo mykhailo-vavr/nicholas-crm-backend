@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
 import {
   ApiBearerAuth,
   ApiConflictResponse,
@@ -25,16 +25,9 @@ export class GiftController {
   constructor(private readonly giftService: GiftService) {}
 
   @ApiUnauthorizedResponse()
-  @ApiConflictResponse()
-  @Post()
-  async create(@Body() dto: CreateGiftDto): Promise<CreateGiftResponse> {
-    return this.giftService.create(dto);
-  }
-
-  @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<DeleteGiftResponse> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<DeleteGiftResponse> {
     return this.giftService.delete(id);
   }
 
@@ -53,7 +46,14 @@ export class GiftController {
   @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @Get(':id')
-  async getByPk(@Param('id') id: number): Promise<GetGiftByPkResponse> {
+  async getByPk(@Param('id', ParseIntPipe) id: number): Promise<GetGiftByPkResponse> {
     return this.giftService.getByPk(id);
+  }
+
+  @ApiUnauthorizedResponse()
+  @ApiConflictResponse()
+  @Post()
+  async create(@Body() dto: CreateGiftDto): Promise<CreateGiftResponse> {
+    return this.giftService.create(dto);
   }
 }

@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { hash } from 'src/utils';
 import { PrismaService } from '../../common';
@@ -10,6 +10,15 @@ export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: CreateUserDto) {
+    const isTaken = await this.isTaken({
+      email: data.email,
+      phone: data.phone,
+    });
+
+    if (isTaken) {
+      throw new BadRequestException('Дані користувача вже існують.');
+    }
+
     const hashedPassword = await hash(data.password);
 
     const user = await this.prismaService.user.create({
@@ -37,7 +46,7 @@ export class UserService {
       }),
     };
 
-    const [users, count] = await this.prismaService.$transaction([
+    const [users, count] = await Promise.all([
       this.prismaService.user.findMany({
         where,
         skip: (page - 1) * limit,

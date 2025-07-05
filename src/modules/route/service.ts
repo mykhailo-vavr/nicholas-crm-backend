@@ -24,11 +24,11 @@ export class RouteService {
     // TODO: create method getCoordinates in childService
     const children = await this.prismaService.client().child.findMany({
       include: {
-        address: true,
+        Address: true,
       },
     });
 
-    const coords = children.map((item) => ({ lat: item.address.latitude, lng: item.address.longitude }));
+    const coords = children.map((item) => ({ lat: item.Address?.latitude, lng: item.Address?.longitude }));
 
     const k = Math.max(1, Math.floor(coords.length / maxChildrenPerCluster));
 
@@ -55,7 +55,7 @@ export class RouteService {
           routeAdresses: {
             create: {
               address: {
-                connect: { id: item.address.id },
+                connect: { id: item.Address?.id },
               },
             },
           },

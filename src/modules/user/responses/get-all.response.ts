@@ -12,10 +12,10 @@ class Item {
 
   email: string;
 
+  isActive: boolean;
+
   @ApiProperty({ enum: Role, enumName: 'ROLES', isArray: true })
   roles: Role[];
-
-  isActive: boolean;
 }
 
 export class GetAllUsersResponse {

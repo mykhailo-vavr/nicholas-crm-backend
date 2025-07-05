@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiNotFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { CreateRoutesDto } from './dto/create.dto';
 import { GetRouteConfigByYearResponse } from './responses/get-config-by-year.response';
@@ -12,12 +12,6 @@ export class RouteController {
   constructor(private readonly routeService: RouteService) {}
 
   @ApiUnauthorizedResponse()
-  @Post()
-  async create(@Body() dto: CreateRoutesDto): Promise<void> {
-    return this.routeService.create(dto);
-  }
-
-  @ApiUnauthorizedResponse()
   @Get('config')
   async getConfigs(): Promise<GetRoutesConfigResponse> {
     return this.routeService.getConfigs();
@@ -26,7 +20,13 @@ export class RouteController {
   @ApiUnauthorizedResponse()
   @ApiNotFoundResponse()
   @Get('config/:year')
-  async getConfigByYear(@Param() year: number): Promise<GetRouteConfigByYearResponse> {
+  async getConfigByYear(@Param('year', ParseIntPipe) year: number): Promise<GetRouteConfigByYearResponse> {
     return this.routeService.getConfigByYear(year);
+  }
+
+  @ApiUnauthorizedResponse()
+  @Post()
+  async create(@Body() dto: CreateRoutesDto): Promise<void> {
+    return this.routeService.create(dto);
   }
 }

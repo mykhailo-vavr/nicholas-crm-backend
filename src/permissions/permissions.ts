@@ -14,10 +14,29 @@ export type Permission =
    */
   | 'volunteer:create'
   | 'volunteer:read'
-  | 'volunteer:update';
+  | 'volunteer:update'
+
+  /**
+   * Дозволи для таблиці дітей
+   */
+  | 'child:create'
+  | 'child:read'
+  | 'child:update';
 
 export const ROLE_PERMISSIONS = {
-  superAdmin: ['user:create', 'user:read', 'user:update', 'volunteer:create', 'volunteer:read', 'volunteer:update'],
+  superAdmin: [
+    'user:create',
+    'user:read',
+    'user:update',
+
+    'volunteer:create',
+    'volunteer:read',
+    'volunteer:update',
+
+    'child:create',
+    'child:read',
+    'child:update',
+  ],
   admin: [],
   volunteer: [],
 } satisfies Record<Role, Permission[]>;

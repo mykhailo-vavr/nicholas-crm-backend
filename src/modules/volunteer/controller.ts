@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Post } from '@nestjs/common';
 import { ApiConflictResponse, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Public } from 'src/decorators';
 import { CreateVolunteerDto } from './dto';
@@ -9,16 +9,8 @@ import { VolunteerService } from './service';
 export class VolunteerController {
   constructor(private readonly volunteerService: VolunteerService) {}
 
-  @ApiCreatedResponse()
-  @ApiConflictResponse()
-  @Public()
-  @Post()
-  async create(@Body() dto: CreateVolunteerDto) {
-    return this.volunteerService.create(dto);
-  }
-
   @Delete(':id')
-  async delete(@Param('id') id: number) {
+  async delete(@Param('id', ParseIntPipe) id: number) {
     return this.volunteerService.delete(id);
   }
 
@@ -28,7 +20,15 @@ export class VolunteerController {
   }
 
   @Get(':id')
-  async getByPk(@Param('id') id: number) {
+  async getByPk(@Param('id', ParseIntPipe) id: number) {
     return this.volunteerService.getByPk(id);
+  }
+
+  @ApiCreatedResponse()
+  @ApiConflictResponse()
+  @Public()
+  @Post()
+  async create(@Body() dto: CreateVolunteerDto) {
+    return this.volunteerService.create(dto);
   }
 }

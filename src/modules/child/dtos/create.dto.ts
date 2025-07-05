@@ -1,56 +1,23 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Gender, NeedStatus } from '@prisma/client';
-import { Type } from 'class-transformer';
-import {
-  IsEnum,
-  IsInt,
-  IsNotEmpty,
-  IsNotEmptyObject,
-  IsOptional,
-  IsPhoneNumber,
-  Max,
-  MaxLength,
-  Min,
-  MinLength,
-  ValidateNested,
-} from 'class-validator';
-import { CreateAddressDto } from 'src/modules/address';
+import { ChildStatus, Gender, NeedStatus } from '@prisma/client';
+import { createZodDto } from 'nestjs-zod';
 import { getCurrentYear } from 'src/utils';
+import { z } from 'zod';
 
-// TODO: create custom validator to validate 'less than current year'
+export const createChildSchema = z
+  .object({
+    firstName: z.string().trim().min(1),
+    lastName: z.string().trim().min(1),
+    birthYear: z
+      .number()
+      .int()
+      .min(getCurrentYear() - 100)
+      .max(getCurrentYear()),
+    gender: z.nativeEnum(Gender),
+    phone: z.string().regex(/^380\d{9}$/),
+    notes: z.string().optional(),
+    needStatus: z.nativeEnum(NeedStatus),
+    status: z.nativeEnum(ChildStatus),
+  })
+  .strict();
 
-export class CreateChildDto {
-  @MaxLength(20)
-  @IsNotEmpty()
-  firstName: string;
-
-  @MaxLength(20)
-  @IsNotEmpty()
-  lastName: string;
-
-  @Min(2000)
-  @Max(getCurrentYear())
-  @IsInt()
-  birthYear: number;
-
-  @ApiProperty({ enum: Gender, enumName: 'GenderEnum' })
-  @IsEnum(Gender)
-  gender: Gender;
-
-  @IsPhoneNumber('UA')
-  phone: string;
-
-  @IsOptional()
-  @MinLength(1)
-  notes?: string;
-
-  @ApiProperty({ enum: NeedStatus, enumName: 'NeedStatusEnum' })
-  @IsEnum(NeedStatus)
-  needStatus: NeedStatus;
-
-  @ApiProperty({ type: CreateAddressDto })
-  @ValidateNested()
-  @IsNotEmptyObject()
-  @Type(() => CreateAddressDto)
-  address: CreateAddressDto;
-}
+export class CreateChildDto extends createZodDto(createChildSchema) {}

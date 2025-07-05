@@ -1,10 +1,19 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
-import { ApiBearerAuth, ApiNotFoundResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
-import { CreateChildDto, DeactivateChildDto, IsChildTakenDto } from './dtos';
-import { CreateManyChildrenDto } from './dtos/create-many.dto';
-import { GetAllChildrenQuery } from './queries';
-import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
-import { IsChildTakenResponse } from './responses/is-taken.response';
+import { Body, Controller, ForbiddenException, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiForbiddenResponse,
+  ApiNotFoundResponse,
+  ApiTags,
+  ApiUnauthorizedResponse,
+} from '@nestjs/swagger';
+import { BaseResponse } from 'src/common';
+import { User } from 'src/decorators';
+import { hasPermission } from 'src/permissions';
+import { UserTokenData } from 'src/types';
+import { CreateChildDto, CreateManyChildrenDto } from './dtos';
+import { GetAllChildrenQuery, IsChildTakenQuery } from './queries';
+import { GetAllChildrenResponse, GetChildByPkResponse, IsChildTakenResponse } from './responses';
 import { ChildService } from './service';
 
 @ApiBearerAuth()
@@ -14,54 +23,60 @@ export class ChildController {
   constructor(private readonly childService: ChildService) {}
 
   @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @Patch(':id/activate')
-  async activate(@Param('id') id: number) {
-    return this.childService.activate(id);
-  }
-
-  @ApiUnauthorizedResponse()
-  @Post()
-  async create(@Body() dto: CreateChildDto): Promise<CreateChildResponse> {
-    return this.childService.create(dto);
-  }
-
-  @ApiUnauthorizedResponse()
-  @Post('many')
-  async createMany(@Body() dto: CreateManyChildrenDto): Promise<void> {
-    return this.childService.createMany(dto);
-  }
-
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @Patch(':id/deactivate')
-  async deactivate(@Param('id') id: number, @Body() dto: DeactivateChildDto) {
-    return this.childService.deactivate(id, dto);
-  }
-
-  @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @Delete(':id')
-  async delete(@Param('id') id: number): Promise<DeleteChildResponse> {
-    return this.childService.delete(id);
-  }
-
-  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
   @Get()
-  async getAll(@Query() query: GetAllChildrenQuery): Promise<GetAllChildrenResponse> {
+  async getAll(@Query() query: GetAllChildrenQuery, @User() user: UserTokenData): Promise<GetAllChildrenResponse> {
+    if (!hasPermission(user, 'child:read')) {
+      throw new ForbiddenException('У вас немає дозволу на перегляд даних дітей.');
+    }
+
     return this.childService.getAll(query);
   }
 
   @ApiUnauthorizedResponse()
-  @ApiNotFoundResponse()
-  @Get(':id')
-  async getByPk(@Param('id') id: number): Promise<GetChildByPkResponse> {
-    return this.childService.getByPk(id);
+  @ApiForbiddenResponse()
+  @Get('is-taken')
+  async isTaken(@Query() query: IsChildTakenQuery, @User() user: UserTokenData): Promise<IsChildTakenResponse> {
+    if (!hasPermission(user, 'child:read')) {
+      throw new ForbiddenException('У вас немає дозволу на перегляд даних дитини.');
+    }
+
+    return this.childService.isTaken(query);
   }
 
   @ApiUnauthorizedResponse()
-  @Post('is-taken')
-  async isTaken(@Body() query: IsChildTakenDto): Promise<IsChildTakenResponse> {
-    return this.childService.isTaken(query);
+  @ApiForbiddenResponse()
+  @ApiNotFoundResponse()
+  @Get(':id')
+  async getByPk(@Param('id', ParseIntPipe) id: number, @User() user: UserTokenData): Promise<GetChildByPkResponse> {
+    if (!hasPermission(user, 'child:read')) {
+      throw new ForbiddenException('У вас немає дозволу на перегляд даних дитини.');
+    }
+
+    return this.childService.getByPk(id);
+  }
+
+  @ApiBadRequestResponse()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Post()
+  async create(@Body() dto: CreateChildDto, @User() user: UserTokenData): Promise<BaseResponse> {
+    if (!hasPermission(user, 'child:create')) {
+      throw new ForbiddenException('У вас немає дозволу на додавання даних дитини.');
+    }
+
+    return this.childService.create(dto);
+  }
+
+  @ApiBadRequestResponse()
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @Post('many')
+  async createMany(@Body() dto: CreateManyChildrenDto, @User() user: UserTokenData): Promise<BaseResponse> {
+    if (!hasPermission(user, 'child:create')) {
+      throw new ForbiddenException('У вас немає дозволу на додавання даних дітей.');
+    }
+
+    return this.childService.createMany(dto);
   }
 }

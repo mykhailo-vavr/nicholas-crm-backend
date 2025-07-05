@@ -1,14 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
-import { IsArray, ValidateNested } from 'class-validator';
-import { CreateChildDto } from './create.dto';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
+import { createChildSchema } from './create.dto';
 
-// TODO: create custom validator to validate 'less than current year'
-
-export class CreateManyChildrenDto {
-  @ApiProperty({ type: [CreateChildDto] })
-  @ValidateNested()
-  @IsArray()
-  @Type(() => CreateChildDto)
-  items: CreateChildDto[];
-}
+export class CreateManyChildrenDto extends createZodDto(
+  z
+    .object({
+      items: z.array(createChildSchema),
+    })
+    .strict(),
+) {}

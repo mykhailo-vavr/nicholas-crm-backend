@@ -1,15 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/common';
-import { formatPaginatedResponse, getPaginationOptions, getSortOptions } from 'src/utils';
 import { AddressService } from '../address';
-import { CreateChildDto, DeactivateChildDto, IsChildTakenDto } from './dtos';
-import { CreateManyChildrenDto } from './dtos/create-many.dto';
-import { GetAllChildrenQuery } from './queries';
-import { CreateChildResponse, DeleteChildResponse, GetAllChildrenResponse, GetChildByPkResponse } from './responses';
-import { IsChildTakenResponse } from './responses/is-taken.response';
-
-// TODO: create isTaken method (firstName, lastName, birthYear)
+import { CreateChildDto, CreateManyChildrenDto } from './dtos';
+import { GetAllChildrenQuery, IsChildTakenQuery } from './queries';
 
 @Injectable()
 export class ChildService {
@@ -18,131 +12,111 @@ export class ChildService {
     private readonly prismaService: PrismaService,
   ) {}
 
-  async activate(id: number) {
-    await this.getByPk(id);
+  async create(data: CreateChildDto) {
+    const isTaken = await this.isTaken({
+      firstName: data.firstName,
+      lastName: data.lastName,
+      birthYear: data.birthYear,
+      phone: data.phone,
+    });
 
-    await this.prismaService.client().child.update({
-      where: { id },
+    if (isTaken) {
+      throw new BadRequestException('Дані дитини вже записані в системі.');
+    }
+
+    await this.prismaService.client().child.create({
       data: {
-        isActive: true,
+        firstName: data.firstName,
+        lastName: data.lastName,
+        birthYear: data.birthYear,
+        gender: data.gender,
+        phone: data.phone,
+        notes: data.notes,
+        needStatus: data.needStatus,
+        status: data.status,
       },
     });
+
+    return { ok: true };
   }
 
-  async create(data: CreateChildDto): Promise<CreateChildResponse> {
-    const { address, ...childData } = data;
-
-    const createdChild = await this.prismaService.createTransaction(async () => {
-      const { id } = await this.addressService.create(address);
-
-      const child = await this.prismaService.client().child.create({
-        data: {
-          ...childData,
-          address: {
-            connect: {
-              id,
-            },
-          },
-        },
-        include: {
-          address: true,
-        },
-      });
-
-      return child;
-    });
-
-    return createdChild;
-  }
-
-  async createMany(data: CreateManyChildrenDto): Promise<void> {
+  async createMany(data: CreateManyChildrenDto) {
     await this.prismaService.createTransaction(async () => {
       await Promise.all(data.items.map((item) => this.create(item)));
     });
+
+    return { ok: true };
   }
 
-  async deactivate(id: number, data: DeactivateChildDto): Promise<void> {
-    await this.getByPk(id);
-
-    await this.prismaService.client().child.update({
-      where: { id },
-      data: {
-        isActive: false,
-        deactivationReason: data.deactivationReason,
-      },
-    });
-  }
-
-  async delete(id: number): Promise<DeleteChildResponse> {
-    await this.getByPk(id);
-
-    return this.prismaService.client().child.delete({
-      where: { id },
-      include: { address: true },
-    });
-  }
-
-  async getAll(query: GetAllChildrenQuery): Promise<GetAllChildrenResponse> {
-    const {
-      search = '',
-      sort = Prisma.ChildScalarFieldEnum.id,
-      order = Prisma.SortOrder.asc,
-      page = 0,
-      limit = 20,
-    } = query;
-
-    const where: Prisma.ChildFindManyArgs['where'] = {
+  async getAll({ search, page, limit, sort, order }: GetAllChildrenQuery) {
+    const where: Prisma.ChildWhereInput = {
       ...(search && {
         OR: [
           { firstName: { contains: search, mode: 'insensitive' } },
           { lastName: { contains: search, mode: 'insensitive' } },
-          { deactivationReason: { contains: search, mode: 'insensitive' } },
           { phone: { contains: search, mode: 'insensitive' } },
         ],
       }),
     };
 
-    const [children, total] = await this.prismaService.$transaction([
-      this.prismaService.client().child.findMany({
+    const [children, count] = await Promise.all([
+      this.prismaService.child.findMany({
         where,
-        ...getPaginationOptions({ page, limit }),
-        ...getSortOptions({ sort, order }),
-        include: { address: true },
+        skip: (page - 1) * limit,
+        take: limit,
+        orderBy: {
+          [sort]: order,
+        },
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          birthYear: true,
+          gender: true,
+          phone: true,
+          needStatus: true,
+          status: true,
+        },
       }),
-      this.prismaService.client().child.count({ where }),
+      this.prismaService.child.count({ where }),
     ]);
 
-    return formatPaginatedResponse({ items: children, total });
+    return {
+      items: children,
+      total: count,
+    };
   }
 
-  async getByPk(id: number): Promise<GetChildByPkResponse> {
+  async getByPk(id: number) {
     const child = await this.prismaService.client().child.findUnique({
       where: { id },
-      include: { address: true },
+      select: {
+        id: true,
+      },
     });
 
     if (!child) {
-      throw new NotFoundException('There is no child with such id');
+      throw new NotFoundException('Дані дитини не знайдено.');
     }
 
     return child;
   }
 
-  async isTaken(query: IsChildTakenDto): Promise<IsChildTakenResponse> {
+  async isTaken(query: IsChildTakenQuery) {
     const child = await this.prismaService.client().child.findFirst({
       where: {
         lastName: query.lastName,
         firstName: query.firstName,
         birthYear: query.birthYear,
+        phone: query.phone,
       },
-      include: {
-        address: true,
+      select: {
+        id: true,
       },
     });
 
     return {
       isTaken: !!child,
-      child: child || undefined,
     };
   }
 }

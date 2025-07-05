@@ -1,6 +1,28 @@
-import { PaginatedDto } from 'src/utils';
-import { ChildBaseResponse } from './base.response';
+import { ApiProperty } from '@nestjs/swagger';
+import { ChildStatus, Gender, NeedStatus } from '@prisma/client';
 
-export class GetAllChildrenResponse extends PaginatedDto<ChildBaseResponse> {
-  items: ChildBaseResponse[];
+class Item {
+  id: number;
+
+  firstName: string;
+
+  lastName: string;
+
+  birthYear: number;
+
+  phone: string | null;
+
+  @ApiProperty({ enum: Gender, enumName: 'GENDERS' })
+  gender: Gender;
+
+  @ApiProperty({ enum: NeedStatus, enumName: 'NEED_STATUSES' })
+  needStatus: NeedStatus;
+
+  @ApiProperty({ enum: ChildStatus, enumName: 'CHILD_STATUSES' })
+  status: ChildStatus;
+}
+
+export class GetAllChildrenResponse {
+  items: Item[];
+  total: number;
 }

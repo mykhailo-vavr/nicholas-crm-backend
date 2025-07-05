@@ -1,8 +1,9 @@
-import globals from 'globals';
 import jsPlugin from '@eslint/js';
-import tsEslint from 'typescript-eslint';
 import importPlugin from 'eslint-plugin-import';
 import prettierPlugin from 'eslint-plugin-prettier/recommended';
+import globals from 'globals';
+import tsEslint from 'typescript-eslint';
+import mykolaiCrmPlugin from './eslint-plugin-mykolai-crm/index.js';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
@@ -35,5 +36,6 @@ export default [
       'no-console': ['error', { allow: ['warn', 'error', 'info'] }],
     },
   },
+  mykolaiCrmPlugin.configs.recommended,
   prettierPlugin,
 ];
