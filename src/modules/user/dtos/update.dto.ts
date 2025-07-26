@@ -1,13 +1,14 @@
 import { createZodDto } from 'nestjs-zod';
+import { firstNameSchema, lastNameSchema, stringSchema } from 'src/utils';
 import { z } from 'zod';
 
 export class UpdateUserDto extends createZodDto(
   z
     .object({
-      firstName: z.string().trim().min(1),
-      lastName: z.string().trim().min(1),
+      firstName: firstNameSchema,
+      lastName: lastNameSchema,
       isActive: z.boolean(),
-      deactivationReason: z.string().trim().min(1).nullable(),
+      deactivationReason: stringSchema.nullable(),
     })
     .partial()
     .strict(),

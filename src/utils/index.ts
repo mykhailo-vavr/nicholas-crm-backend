@@ -7,3 +7,4 @@ export * from './metadata';
 export * from './namespace';
 export * from './prisma';
 export * from './query';
+export * from './schema';

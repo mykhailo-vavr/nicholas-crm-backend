@@ -1,11 +1,12 @@
 import { createZodDto } from 'nestjs-zod';
+import { stringSchema, uaStringSchema } from 'src/utils';
 import { z } from 'zod';
 
 export const createAddressSchema = z
   .object({
-    city: z.string().trim().min(1),
-    street: z.string().trim().min(1),
-    streetNumber: z.string().trim().optional(),
+    city: uaStringSchema.max(30),
+    street: uaStringSchema.max(50),
+    streetNumber: stringSchema.max(10).optional(),
     flatNumber: z.number().int().min(1).optional(),
     latitude: z.number(),
     longitude: z.number(),
