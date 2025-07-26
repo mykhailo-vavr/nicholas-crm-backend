@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/common/prisma';
-import { GeoService } from '../geo';
 import { CreateAddressDto } from './dtos';
 import { IsAddressTakenQuery } from './queries';
-import { IsAddressTakenResponse } from './responses';
 
 @Injectable()
 export class AddressService {
-  constructor(
-    private readonly geoService: GeoService,
-    private readonly prismaService: PrismaService,
-  ) {}
+  constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: CreateAddressDto) {
     const { isTaken, id } = await this.isTaken(data);
@@ -19,21 +14,31 @@ export class AddressService {
       return { id };
     }
 
-    const coordinates = await this.geoService.getCoordinates(data);
-
     const address = await this.prismaService.client().address.create({
       data: {
-        ...data,
-        ...coordinates,
+        city: data.city,
+        street: data.street,
+        streetNumber: data.streetNumber,
+        flatNumber: data.flatNumber,
+        latitude: data.latitude,
+        longitude: data.longitude,
+      },
+      select: {
+        id: true,
       },
     });
 
     return address;
   }
 
-  async isTaken(query: IsAddressTakenQuery): Promise<IsAddressTakenResponse> {
+  async isTaken(query: IsAddressTakenQuery) {
     const address = await this.prismaService.client().address.findFirst({
-      where: query,
+      where: {
+        city: query.city,
+        street: query.street,
+        streetNumber: query.streetNumber,
+        flatNumber: query.flatNumber,
+      },
     });
 
     return {

@@ -1,17 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Role } from '@prisma/client';
 
-class Item {
+class GetAllUsersItem {
   id: number;
-
   firstName: string;
-
   lastName: string;
-
   phone: string;
-
   email: string;
-
   isActive: boolean;
 
   @ApiProperty({ enum: Role, enumName: 'ROLES', isArray: true })
@@ -19,6 +14,6 @@ class Item {
 }
 
 export class GetAllUsersResponse {
-  items: Item[];
+  items: GetAllUsersItem[];
   total: number;
 }

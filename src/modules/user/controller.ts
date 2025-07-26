@@ -1,7 +1,7 @@
 import { Body, Controller, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiTags,
@@ -78,9 +78,9 @@ export class UserController {
     return this.userService.update(id, dto);
   }
 
-  @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
+  @ApiConflictResponse()
   @Post()
   async create(@Body() dto: CreateUserDto, @User() user: UserTokenData): Promise<BaseResponse> {
     if (!hasPermission(user, 'user:create')) {

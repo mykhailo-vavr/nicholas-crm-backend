@@ -1,8 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { PrismaService } from 'src/common';
 import { AddressService } from '../address';
-import { CreateChildDto, CreateManyChildrenDto } from './dtos';
+import { CreateChildDto, CreateManyChildrenDto, UpdateChildDto } from './dtos';
 import { GetAllChildrenQuery, IsChildTakenQuery } from './queries';
 
 @Injectable()
@@ -13,7 +13,7 @@ export class ChildService {
   ) {}
 
   async create(data: CreateChildDto) {
-    const isTaken = await this.isTaken({
+    const { isTaken } = await this.isTaken({
       firstName: data.firstName,
       lastName: data.lastName,
       birthYear: data.birthYear,
@@ -21,8 +21,17 @@ export class ChildService {
     });
 
     if (isTaken) {
-      throw new BadRequestException('Дані дитини вже записані в системі.');
+      throw new ConflictException('Дані дитини вже існують.');
     }
+
+    const { id } = await this.addressService.create({
+      city: data.address.city,
+      street: data.address.street,
+      streetNumber: data.address.streetNumber,
+      flatNumber: data.address.flatNumber,
+      latitude: data.address.latitude,
+      longitude: data.address.longitude,
+    });
 
     await this.prismaService.client().child.create({
       data: {
@@ -33,7 +42,8 @@ export class ChildService {
         phone: data.phone,
         notes: data.notes,
         needStatus: data.needStatus,
-        status: data.status,
+        status: 'ACTIVE',
+        addressId: id,
       },
     });
 
@@ -60,7 +70,7 @@ export class ChildService {
     };
 
     const [children, count] = await Promise.all([
-      this.prismaService.child.findMany({
+      this.prismaService.client().child.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
@@ -78,7 +88,7 @@ export class ChildService {
           status: true,
         },
       }),
-      this.prismaService.child.count({ where }),
+      this.prismaService.client().child.count({ where }),
     ]);
 
     return {
@@ -92,6 +102,24 @@ export class ChildService {
       where: { id },
       select: {
         id: true,
+        firstName: true,
+        lastName: true,
+        gender: true,
+        birthYear: true,
+        phone: true,
+        needStatus: true,
+        status: true,
+        notes: true,
+        Address: {
+          select: {
+            city: true,
+            street: true,
+            streetNumber: true,
+            flatNumber: true,
+            latitude: true,
+            longitude: true,
+          },
+        },
       },
     });
 
@@ -118,5 +146,27 @@ export class ChildService {
     return {
       isTaken: !!child,
     };
+  }
+
+  async update(id: number, data: UpdateChildDto) {
+    const user = await this.prismaService.client().child.findUnique({
+      where: {
+        id,
+      },
+    });
+
+    if (!user) {
+      throw new NotFoundException('Дані дитини не знайдено.');
+    }
+
+    await this.prismaService.client().child.update({
+      where: { id },
+      data: {
+        firstName: data.firstName,
+        lastName: data.lastName,
+      },
+    });
+
+    return { ok: true };
   }
 }

@@ -1,7 +1,7 @@
-import { Body, Controller, ForbiddenException, Get, Param, ParseIntPipe, Post, Query } from '@nestjs/common';
+import { Body, Controller, ForbiddenException, Get, Param, ParseIntPipe, Patch, Post, Query } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
   ApiBearerAuth,
+  ApiConflictResponse,
   ApiForbiddenResponse,
   ApiNotFoundResponse,
   ApiTags,
@@ -11,7 +11,7 @@ import { BaseResponse } from 'src/common';
 import { User } from 'src/decorators';
 import { hasPermission } from 'src/permissions';
 import { UserTokenData } from 'src/types';
-import { CreateChildDto, CreateManyChildrenDto } from './dtos';
+import { CreateChildDto, CreateManyChildrenDto, UpdateChildDto } from './dtos';
 import { GetAllChildrenQuery, IsChildTakenQuery } from './queries';
 import { GetAllChildrenResponse, GetChildByPkResponse, IsChildTakenResponse } from './responses';
 import { ChildService } from './service';
@@ -56,9 +56,24 @@ export class ChildController {
     return this.childService.getByPk(id);
   }
 
-  @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
+  @Patch(':id')
+  async update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() dto: UpdateChildDto,
+    @User() user: UserTokenData,
+  ): Promise<BaseResponse> {
+    if (!hasPermission(user, 'child:update')) {
+      throw new ForbiddenException('У вас немає дозволу на оновлення даних дитини.');
+    }
+
+    return this.childService.update(id, dto);
+  }
+
+  @ApiUnauthorizedResponse()
+  @ApiForbiddenResponse()
+  @ApiConflictResponse()
   @Post()
   async create(@Body() dto: CreateChildDto, @User() user: UserTokenData): Promise<BaseResponse> {
     if (!hasPermission(user, 'child:create')) {
@@ -68,9 +83,9 @@ export class ChildController {
     return this.childService.create(dto);
   }
 
-  @ApiBadRequestResponse()
   @ApiUnauthorizedResponse()
   @ApiForbiddenResponse()
+  @ApiConflictResponse()
   @Post('many')
   async createMany(@Body() dto: CreateManyChildrenDto, @User() user: UserTokenData): Promise<BaseResponse> {
     if (!hasPermission(user, 'child:create')) {

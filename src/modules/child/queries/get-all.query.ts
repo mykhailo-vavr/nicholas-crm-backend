@@ -9,7 +9,7 @@ export class GetAllChildrenQuery extends createZodDto(
       page: z.coerce.number().default(1),
       limit: z.coerce.number().default(10),
       sort: z
-        .enum(['id', 'firstName', 'lastName', 'birthYear', 'gender', 'phone', 'address', 'needStatus', 'isActive'])
+        .enum(['id', 'firstName', 'lastName', 'gender', 'birthYear', 'phone', 'address', 'needStatus', 'status'])
         .default('id'),
       order: z.nativeEnum(Prisma.SortOrder).default('desc'),
     })

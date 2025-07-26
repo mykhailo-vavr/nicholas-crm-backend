@@ -1,15 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { ChildStatus, Gender, NeedStatus } from '@prisma/client';
 
-class Item {
+class GetAllChildrenItem {
   id: number;
-
   firstName: string;
-
   lastName: string;
-
   birthYear: number;
-
   phone: string | null;
 
   @ApiProperty({ enum: Gender, enumName: 'GENDERS' })
@@ -23,6 +19,6 @@ class Item {
 }
 
 export class GetAllChildrenResponse {
-  items: Item[];
+  items: GetAllChildrenItem[];
   total: number;
 }

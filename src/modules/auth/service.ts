@@ -12,7 +12,7 @@ export class AuthService {
   ) {}
 
   async signIn(data: SignInDto) {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.client().user.findUnique({
       where: {
         email: data.email,
       },

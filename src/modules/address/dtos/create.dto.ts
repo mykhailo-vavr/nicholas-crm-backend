@@ -1,21 +1,15 @@
-import { IsInt, IsNotEmpty, IsOptional, IsPositive, MaxLength } from 'class-validator';
+import { createZodDto } from 'nestjs-zod';
+import { z } from 'zod';
 
-export class CreateAddressDto {
-  @IsNotEmpty()
-  @MaxLength(30)
-  city: string;
+export const createAddressSchema = z
+  .object({
+    city: z.string().trim().min(1),
+    street: z.string().trim().min(1),
+    streetNumber: z.string().trim().optional(),
+    flatNumber: z.number().int().min(1).optional(),
+    latitude: z.number(),
+    longitude: z.number(),
+  })
+  .strict();
 
-  @IsNotEmpty()
-  @MaxLength(50)
-  street: string;
-
-  @IsOptional()
-  @IsNotEmpty()
-  @MaxLength(10)
-  streetNumber?: string;
-
-  @IsOptional()
-  @IsInt()
-  @IsPositive()
-  flatNumber?: number;
-}
+export class CreateAddressDto extends createZodDto(createAddressSchema) {}

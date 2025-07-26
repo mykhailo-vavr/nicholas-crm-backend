@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { hash } from 'src/utils';
 import { PrismaService } from '../../common';
@@ -10,18 +10,18 @@ export class UserService {
   constructor(private readonly prismaService: PrismaService) {}
 
   async create(data: CreateUserDto) {
-    const isTaken = await this.isTaken({
+    const { isTaken } = await this.isTaken({
       email: data.email,
       phone: data.phone,
     });
 
     if (isTaken) {
-      throw new BadRequestException('Дані користувача вже існують.');
+      throw new ConflictException('Дані користувача вже існують.');
     }
 
     const hashedPassword = await hash(data.password);
 
-    const user = await this.prismaService.user.create({
+    const user = await this.prismaService.client().user.create({
       data: {
         ...data,
         password: hashedPassword,
@@ -47,7 +47,7 @@ export class UserService {
     };
 
     const [users, count] = await Promise.all([
-      this.prismaService.user.findMany({
+      this.prismaService.client().user.findMany({
         where,
         skip: (page - 1) * limit,
         take: limit,
@@ -64,7 +64,7 @@ export class UserService {
           isActive: true,
         },
       }),
-      this.prismaService.user.count({ where }),
+      this.prismaService.client().user.count({ where }),
     ]);
 
     return {
@@ -74,7 +74,7 @@ export class UserService {
   }
 
   async getByPk(id: number) {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.client().user.findUnique({
       where: { id },
       select: {
         id: true,
@@ -97,10 +97,10 @@ export class UserService {
 
   async isTaken(query: IsUserTakenQuery) {
     const [userEmail, userPhone] = await Promise.all([
-      this.prismaService.user.findUnique({
+      this.prismaService.client().user.findUnique({
         where: { email: query.email },
       }),
-      this.prismaService.user.findUnique({
+      this.prismaService.client().user.findUnique({
         where: { phone: query.phone },
       }),
     ]);
@@ -113,7 +113,7 @@ export class UserService {
   }
 
   async update(id: number, data: UpdateUserDto) {
-    const user = await this.prismaService.user.findUnique({
+    const user = await this.prismaService.client().user.findUnique({
       where: {
         id,
       },
@@ -123,7 +123,7 @@ export class UserService {
       throw new NotFoundException('Користувача не знайдено.');
     }
 
-    await this.prismaService.user.update({
+    await this.prismaService.client().user.update({
       where: { id },
       data: {
         firstName: data.firstName,
