@@ -2,15 +2,25 @@ import { z } from 'zod';
 
 export const stringSchema = z.string().trim().min(1);
 
-export const uaStringSchema = z
+export const addressItemSchema = z
   .string()
   .trim()
   .min(1)
-  .regex(/^[А-Яа-яіїєґIЇЄҐ]+$/);
+  .regex(
+    /^[АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+([- ][АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+)*$/,
+  );
 
-export const firstNameSchema = uaStringSchema.max(20);
+export const firstNameSchema = stringSchema
+  .regex(
+    /^[АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+([- ][АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+)*$/,
+  )
+  .max(20);
 
-export const lastNameSchema = uaStringSchema.max(20);
+export const lastNameSchema = stringSchema
+  .regex(
+    /^[АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+([- ][АБВГҐДЕЄЖЗИІЇЙКЛМНОПРСТУФХЦЧШЩЬЮЯабвгґдеєжзиіїйклмнопрстуфхцчшщьюя]+)*$/,
+  )
+  .max(20);
 
 export const phoneSchema = z.string().regex(/^380(50|63|66|67|68|73|75|77|89|93|95|96|97|98|99)\d{7}$/);
 

@@ -1,4 +1,5 @@
 import { createZodDto } from 'nestjs-zod';
+import z from 'zod';
 import { createAddressSchema } from '../dtos';
 
 export class IsAddressTakenQuery extends createZodDto(
@@ -7,7 +8,9 @@ export class IsAddressTakenQuery extends createZodDto(
       city: true,
       street: true,
       streetNumber: true,
-      flatNumber: true,
+    })
+    .extend({
+      flatNumber: z.pipeline(z.coerce.number().optional(), createAddressSchema.shape.flatNumber),
     })
     .strict(),
 ) {}
